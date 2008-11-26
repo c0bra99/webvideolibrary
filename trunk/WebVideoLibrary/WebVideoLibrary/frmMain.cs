@@ -42,6 +42,9 @@ namespace WebVideoLibrary
         }
 
 
+        /// <summary>
+        /// Fires when the user clicks the start button.
+        /// </summary>
         private void btnStart_Click(object sender, EventArgs e)
         {
             CvCapture capture = cvlib.CvCreateFileCapture(txtVideo.Text);
