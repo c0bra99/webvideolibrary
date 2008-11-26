@@ -21,11 +21,15 @@ namespace WebVideoLibrary
             InitializeComponent();
         }
 
+
+        /// <summary>
+        /// Fires first thing after the form loads
+        /// </summary>
         private void frmMain_Load(object sender, EventArgs e)
         {
-            openFileDialog1.Filter = "Video files|*.avi;*.divx;*.mpg";
-            openFileDialog1.FileName = "";
-            txtVideoInputPath.Text = "c:\\temp\\bouncing_ball.divx";
+            openFileDialog1.Filter = "Video files|*.avi;*.divx;*.mpg;*.wmv;*.mp4|All Files|*.*";
+            openFileDialog1.FileName = string.Empty; //initial filename when box pops up = nothing
+            txtVideoInputPath.Text = "c:\\temp\\bouncing_ball.divx";//so we dont have to browse everytime we test
         }
 
 
@@ -60,7 +64,7 @@ namespace WebVideoLibrary
             //check to make sure it opened ok
             if (capture.ptr == IntPtr.Zero)
             {
-                MessageBox.Show("Creation of File Capture failed.");
+                MessageBox.Show("Creation of File Capture failed. Check to make sure the correct codec is installed.");
                 return;
             }
 
@@ -142,11 +146,11 @@ namespace WebVideoLibrary
 
             if (this.Height < bmpImage.Height)
             {
-                this.Height = bmpImage.Height + 100;
+                this.Height = bmpImage.Height + pictureBox.Top + pictureBox.Bottom;
             }
             if (this.Width < bmpImage.Width)
             {
-                this.Width = bmpImage.Width + 100;
+                this.Width = bmpImage.Width + pictureBox.Left + pictureBox.Right;
             }
         }
 
