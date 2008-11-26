@@ -30,7 +30,7 @@ namespace WebVideoLibrary
         {
             this.btnStart = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
-            this.txtVideo = new System.Windows.Forms.TextBox();
+            this.txtVideoInputPath = new System.Windows.Forms.TextBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.btnOpenFile = new System.Windows.Forms.Button();
             this.pictureBox = new System.Windows.Forms.PictureBox();
@@ -54,14 +54,14 @@ namespace WebVideoLibrary
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(34, 13);
             this.label1.TabIndex = 1;
-            this.label1.Text = "Video";
+            this.label1.Text = "Input:";
             // 
-            // txtVideo
+            // txtVideoInputPath
             // 
-            this.txtVideo.Location = new System.Drawing.Point(53, 6);
-            this.txtVideo.Name = "txtVideo";
-            this.txtVideo.Size = new System.Drawing.Size(142, 20);
-            this.txtVideo.TabIndex = 2;
+            this.txtVideoInputPath.Location = new System.Drawing.Point(53, 6);
+            this.txtVideoInputPath.Name = "txtVideoInputPath";
+            this.txtVideoInputPath.Size = new System.Drawing.Size(142, 20);
+            this.txtVideoInputPath.TabIndex = 2;
             // 
             // openFileDialog1
             // 
@@ -82,9 +82,9 @@ namespace WebVideoLibrary
             this.pictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBox.Location = new System.Drawing.Point(12, 32);
+            this.pictureBox.Location = new System.Drawing.Point(12, 33);
             this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(300, 226);
+            this.pictureBox.Size = new System.Drawing.Size(334, 314);
             this.pictureBox.TabIndex = 4;
             this.pictureBox.TabStop = false;
             // 
@@ -92,14 +92,14 @@ namespace WebVideoLibrary
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(324, 264);
+            this.ClientSize = new System.Drawing.Size(358, 349);
             this.Controls.Add(this.pictureBox);
             this.Controls.Add(this.btnOpenFile);
-            this.Controls.Add(this.txtVideo);
+            this.Controls.Add(this.txtVideoInputPath);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.btnStart);
             this.Name = "frmMain";
-            this.Text = "Form1";
+            this.Text = "Web Video Library";
             this.Load += new System.EventHandler(this.frmMain_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
             this.ResumeLayout(false);
@@ -111,7 +111,7 @@ namespace WebVideoLibrary
 
         private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox txtVideo;
+        private System.Windows.Forms.TextBox txtVideoInputPath;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.Button btnOpenFile;
         private System.Windows.Forms.PictureBox pictureBox;
