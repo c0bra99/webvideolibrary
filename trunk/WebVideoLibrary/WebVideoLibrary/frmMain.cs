@@ -39,6 +39,7 @@ namespace WebVideoLibrary
         private void btnOpenFile_Click(object sender, EventArgs e)
         {
             DialogResult result = openFileDialog1.ShowDialog();
+
             if (result == DialogResult.OK)
             {
                 txtVideoInputPath.Text = openFileDialog1.FileName;
@@ -71,6 +72,8 @@ namespace WebVideoLibrary
             int numTotalFramesInVideo = (int)cvlib.cvGetCaptureProperty(capture, cvlib.CV_CAP_PROP_FRAME_COUNT);
             int fps = (int)cvlib.cvGetCaptureProperty(capture, cvlib.CV_CAP_PROP_FPS);
             int fourcc = (int)cvlib.cvGetCaptureProperty(capture, cvlib.CV_CAP_PROP_FOURCC);
+
+            txtLog.AppendText("Input Video Codec FourCC: " + FromFourCC(fourcc) + Environment.NewLine);
             int vidLengthInSeconds = numTotalFramesInVideo / fps;
             int numFramesPerTier2Clip = numTotalFramesInVideo / 4;
             if (numFramesPerTier2Clip * 4 != numTotalFramesInVideo)
@@ -84,26 +87,22 @@ namespace WebVideoLibrary
 
             //We need to grab the first frame before being able to get the width and height
             IplImage image = cvlib.CvQueryFrame(ref capture);
-            int w = (int)cvlib.cvGetCaptureProperty(capture, cvlib.CV_CAP_PROP_FRAME_WIDTH);
-            int h = (int)cvlib.cvGetCaptureProperty(capture, cvlib.CV_CAP_PROP_FRAME_HEIGHT);
-
+            int vidWidth = (int)cvlib.cvGetCaptureProperty(capture, cvlib.CV_CAP_PROP_FRAME_WIDTH);
+            int vidHeight = (int)cvlib.cvGetCaptureProperty(capture, cvlib.CV_CAP_PROP_FRAME_HEIGHT);
 
             string dir = Path.GetDirectoryName(txtVideoInputPath.Text);
             string file = Path.GetFileNameWithoutExtension(txtVideoInputPath.Text);
-            string extension = Path.GetExtension(txtVideoInputPath.Text);
+            string extension = ".avi"; //always use .avi, if you use .divx, it doesnt write the frames correctly for some reason.
 
-            string outputVideoPath = dir + file + "-Tier2Clip1" + extension;
-            CvVideoWriter vidWriter = cvlib.CvCreateVideoWriter(outputVideoPath, -1, fps, new CvSize(w, h), 1);
-            cvlib.CvWriteFrame(vidWriter, ref image);
-            //cvlib.cvWriteFrame(ref vidWriter, ref image);
-
-            cvlib.CvReleaseVideoWriter(ref vidWriter);
+            string outputVideoPath = dir + "\\" + file + "-Tier2Clip1" + extension;
+            CvVideoWriter vidWriter = cvlib.CvCreateVideoWriter(outputVideoPath, cvlib.CvCreateFourCC('D', 'I', 'B', ' '), fps, new CvSize(vidWidth, vidHeight), 1);
 
             //flip the input image
             cvlib.CvFlip(ref image, ref image, 0);
 
             //show the first frame before the while loop
             ShowImage(image);
+            cvlib.CvWriteFrame(vidWriter, ref image);
 
             //increment the number of frames shown counter
             numFramesShown++;
@@ -116,12 +115,30 @@ namespace WebVideoLibrary
                 cvlib.CvFlip(ref image, ref image, 0);
 
                 ShowImage(image);
+                cvlib.CvWriteFrame(vidWriter, ref image);
+
                 numFramesShown++;
 
                 Application.DoEvents();
             }
-            
+
+            cvlib.CvReleaseVideoWriter(ref vidWriter);
             cvlib.CvReleaseCapture(ref capture);
+        }
+
+
+        /// <summary>
+        /// Returns the FourCC human readable characters
+        /// </summary>
+        public static string FromFourCC(int fourCC)
+        {
+            char[] chars = new char[4];
+            chars[0] = (char)(fourCC & 0xFF);
+            chars[1] = (char)((fourCC >> 8) & 0xFF);
+            chars[2] = (char)((fourCC >> 16) & 0xFF);
+            chars[3] = (char)((fourCC >> 24) & 0xFF);
+
+            return new string(chars);
         }
 
 
@@ -144,20 +161,17 @@ namespace WebVideoLibrary
             }
             pictureBox.Image = bmpImage;
 
-            if (this.Height < bmpImage.Height)
+
+            //make sure the form is big enough to show the complete image.
+            if (pictureBox.Height < bmpImage.Height)
             {
-                this.Height = bmpImage.Height + pictureBox.Top + pictureBox.Bottom;
+                this.Height += (bmpImage.Height - pictureBox.Height);
             }
-            if (this.Width < bmpImage.Width)
+
+            if (pictureBox.Width < bmpImage.Width)
             {
-                this.Width = bmpImage.Width + pictureBox.Left + pictureBox.Right;
+                this.Width += (bmpImage.Width - pictureBox.Width);
             }
-        }
-
-
-        private void WriteFrameToVideo(IplImage frame)
-        {
-
         }
     }
 }
