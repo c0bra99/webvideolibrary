@@ -4,6 +4,18 @@
         <name>openCV</name>
     </assembly>
     <members>
+        <member name="F:openCV.cvlib.CV_MAX_ARR">
+            * Increments CvMat data reference counter */
+        </member>
+        <member name="F:openCV.cvlib.CV_GRAPH_VERTEX">
+            * Retrieves index of a graph edge given its pointer */
+        </member>
+        <member name="F:openCV.cvlib.CV_DIST_USER">
+            * get the next edge with the same origin point (counterwise) */
+        </member>
+        <member name="F:openCV.cvlib.CV_STORAGE_READ">
+            * storage flags */
+        </member>
         <member name="F:openCV.cvlib.CV_LOAD_IMAGE_UNCHANGED">
             <summary>
             Left image unchanged
@@ -29,18 +41,6 @@
             by itself equivalent to CV_LOAD_IMAGE_UNCHANGED
             but can be modified with CV_LOAD_IMAGE_ANYDEPTH 
             </summary>
-        </member>
-        <member name="F:openCV.cvlib.CV_DIST_USER">
-            * get the next edge with the same origin point (counterwise) */
-        </member>
-        <member name="F:openCV.cvlib.CV_MAX_ARR">
-            * Increments CvMat data reference counter */
-        </member>
-        <member name="F:openCV.cvlib.CV_GRAPH_VERTEX">
-            * Retrieves index of a graph edge given its pointer */
-        </member>
-        <member name="F:openCV.cvlib.CV_STORAGE_READ">
-            * storage flags */
         </member>
         <member name="M:openCV.cvlib.CvSobel(openCV.IplImage@,openCV.IplImage@,System.Int32,System.Int32,System.Int32)">
             <summary>
@@ -1165,6 +1165,338 @@
         <member name="M:openCV.cvlib.CvComputeCorrespondEpilines(openCV.CvMat@,System.Int32,openCV.CvMat@,openCV.CvMat@)">
             <summary>
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:openCV.cvlib.CvLoadImage(System.String,System.Int32)">
+            <summary>
+            Loads an image from file
+            </summary>
+            <param name="path">Path to the file to be loaded.</param>
+            <param name="flags">Specifies colorness and depth of the loaded image:
+            The colorness specifies whether the loaded image is to be converted to 3 channels (CV_LOAD_IMAGE_COLOR), 1 channel (CV_LOAD_IMAGE_GRAYSCALE), or left as it was in the input file (CV_LOAD_IMAGE_ANYCOLOR).
+            Depth specifies whether the loaded image is to be converted to 8 bits per pixel per color channel as was customary in previous versions of OpenCV or left as they were in the input file. If CV_LOAD_IMAGE_ANYDEPTH is passed the pixel format can be 8 bit unsigned, 16 bit unsigned, 32 bit signed or 32 bit floating point.
+            If conflicting flags are passed the flag with the smaller numerical value wins. That is if CV_LOAD_IMAGE_COLOR | CV_LOAD_IMAGE_ANYCOLOR is passed the image is loaded with 3 channels. CV_LOAD_IMAGE_ANYCOLOR is equivalent to specifying CV_LOAD_IMAGE_UNCHANGED. However, CV_LOAD_IMAGE_ANYCOLOR has the advantage that it can be combined with CV_LOAD_IMAGE_ANYDEPTH. So CV_LOAD_IMAGE_UNCHANGED should not be used any longer.
+            If you want to load the image as truthfully as possible pass CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_ANYCOLOR.</param>
+            <returns>IplImage</returns>
+        </member>
+        <member name="M:openCV.cvlib.CvSaveImage(System.String,openCV.IplImage@)">
+            <summary>
+            Loads an image from file
+            </summary>
+            <param name="path">Name of file to be loaded.</param>
+            <param name="flags">Specifies colorness and depth of the loaded image:
+            The colorness specifies whether the loaded image is to be converted to 3 channels (CV_LOAD_IMAGE_COLOR), 1 channel (CV_LOAD_IMAGE_GRAYSCALE), or left as it was in the input file (CV_LOAD_IMAGE_ANYCOLOR).
+            Depth specifies whether the loaded image is to be converted to 8 bits per pixel per color channel as was customary in previous versions of OpenCV or left as they were in the input file. If CV_LOAD_IMAGE_ANYDEPTH is passed the pixel format can be 8 bit unsigned, 16 bit unsigned, 32 bit signed or 32 bit floating point.
+            If conflicting flags are passed the flag with the smaller numerical value wins. That is if CV_LOAD_IMAGE_COLOR | CV_LOAD_IMAGE_ANYCOLOR is passed the image is loaded with 3 channels. CV_LOAD_IMAGE_ANYCOLOR is equivalent to specifying CV_LOAD_IMAGE_UNCHANGED. However, CV_LOAD_IMAGE_ANYCOLOR has the advantage that it can be combined with CV_LOAD_IMAGE_ANYDEPTH. So CV_LOAD_IMAGE_UNCHANGED should not be used any longer.
+            If you want to load the image as truthfully as possible pass CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_ANYCOLOR.</param>
+            <returns>IplImage</returns>
+        </member>
+        <member name="M:openCV.cvlib.ToBitmap(openCV.IplImage,System.Boolean)">
+            <summary>
+            Converts IplImage to Windows Bitmap
+            Only IPL_DEPTH_8U is supported
+            Only interleaved images are supported
+            Only 3 channels Images are supported
+            </summary>
+            <param name="image">IplImage to convert</param>
+            <param name="dispose">If true IplImage will be disposed</param>
+            <returns>Bitmap with Format24bppRgb</returns>
+        </member>
+        <member name="M:openCV.cvlib.ToIplImage(System.Drawing.Bitmap,System.Boolean)">
+            <summary>
+            Converts Bitmap Image to IplImage
+            Only PixelFormat.Format24bppRgb or 
+            PixelFormat.Format8bppIndexed is supported
+            </summary>
+            <param name="image">Bitmap to convert</param>
+            <param name="dispose">If true the Bitmap will be disposed</param>
+            <returns>IplImage either 3 or 1 channels with Depht 8U</returns>
+        </member>
+        <member name="M:openCV.cvlib.RoiParam(openCV.IplImage,System.Int32@,System.Int32@,System.Int32@,System.Int32@,System.Int32@)">
+            <summary>
+            get ROI params
+            </summary>
+            <param name="start"></param>
+            <param name="rows"></param>
+            <param name="elementCount"></param>
+            <param name="byteWidth"></param>
+            <param name="widthStep"></param>
+        </member>
+        <member name="M:openCV.cvlib.memcpy(System.IntPtr,System.IntPtr,System.Int32)">
+            <summary>
+            classic memcopy
+            </summary>
+            <param name="dest">dst ptr</param>
+            <param name="src">src ptr</param>
+            <param name="len">lenght of mem block</param>
+        </member>
+        <member name="M:openCV.cvlib.CvCreateFileCapture(System.String)">
+            <summary>
+            The function cvCreateFileCapture allocates and 
+            initialized the CvCapture structure for reading the 
+            video stream from the specified file.
+            </summary>
+            <param name="path">Name of the video file.</param>
+            <returns>CvCapture structure</returns>
+        </member>
+        <member name="M:openCV.cvlib.CvCreateCameraCapture(System.Int32)">
+            <summary>
+            The function cvCreateCameraCapture allocates and initialized 
+            the CvCapture structure for reading a video stream from the 
+            camera. Currently two camera interfaces can be used on Windows: 
+            Video for Windows (VFW) and Matrox Imaging Library (MIL); 
+            </summary>
+            <param name="idx">Index of the camera to be used. If there is 
+            only one camera or it does not matter what camera to use -1 
+            may be passed.</param>
+            <returns>CvCapture structure</returns>
+        </member>
+        <member name="M:openCV.cvlib.CvReleaseCapture(openCV.CvCapture@)">
+            <summary>
+            The function cvReleaseCapture releases the CvCapture
+            structure allocated by cvCreateFileCapture or cvCreateCameraCapture.
+            </summary>
+            <param name="capture">Video capturing structure.</param>
+        </member>
+        <member name="M:openCV.cvlib.CvGrabFrame(openCV.CvCapture@)">
+            <summary>
+            The function cvGrabFrame grabs the frame from camera or file. 
+            The grabbed frame is stored internally. The purpose of this 
+            function is to grab frame fast that is important for 
+            syncronization in case of reading from several cameras simultaneously. 
+            The grabbed frames are not exposed because they may be stored in 
+            compressed format (as defined by camera/driver). To retrieve the 
+            grabbed frame, cvRetrieveFrame should be used.
+            </summary>
+            <param name="capture">video capturing structure.</param>
+            <returns>1 if succsess</returns>
+        </member>
+        <member name="M:openCV.cvlib.CvRetrieveFrame(openCV.CvCapture@)">
+            <summary>
+            The function cvRetrieveFrame returns the pointer to the image 
+            grabbed with cvGrabFrame function. The returned image should 
+            not be released or modified by user.
+            </summary>
+            <param name="capture">video capturing structure.</param>
+            <returns>Image</returns>
+        </member>
+        <member name="M:openCV.cvlib.CvQueryFrame(openCV.CvCapture@)">
+            <summary>
+            The function cvQueryFrame grabs a frame from camera 
+            or video file, decompresses and returns it. This function 
+            is just a combination of cvGrabFrame and cvRetrieveFrame 
+            in one call. The returned image should not be released or 
+            modified by user.
+            </summary>
+            <param name="capture">video capturing structure.</param>
+            <returns>Image</returns>
+        </member>
+        <member name="M:openCV.cvlib.CvQueryFrame(openCV.CvCapture@,System.Boolean)">
+            <summary>
+            The function cvQueryFrameFast is same like query frame
+            but returns pointer and has optional Flip param
+            </summary>
+            <param name="capture">video capturing structure.</param>
+            <returns>Image</returns>
+        </member>
+        <member name="M:openCV.cvlib.cvGetCaptureProperty(openCV.CvCapture,System.Int32)">
+            <summary>
+            The function cvGetCaptureProperty retrieves the specified 
+            property of camera or video file.
+            </summary>
+            <param name="capture">video capturing structure.</param>
+            <param name="property_id">property identifier. Can be one of the following:
+            CV_CAP_PROP_POS_MSEC - film current position in milliseconds or video capture timestamp
+            CV_CAP_PROP_POS_FRAMES - 0-based index of the frame to be decoded/captured next
+            CV_CAP_PROP_POS_AVI_RATIO - relative position of video file (0 - start of the film, 1 - end of the film)
+            CV_CAP_PROP_FRAME_WIDTH - width of frames in the video stream
+            CV_CAP_PROP_FRAME_HEIGHT - height of frames in the video stream
+            CV_CAP_PROP_FPS - frame rate
+            CV_CAP_PROP_FOURCC - 4-character code of codec. CV_CAP_PROP_FRAME_COUNT - number of frames in video file.
+            </param>
+            <returns>value</returns>
+        </member>
+        <member name="M:openCV.cvlib.CvSetCaptureProperty(openCV.CvCapture@,System.Int32,System.Double)">
+            <summary>
+            The function cvGetCaptureProperty sets the specified 
+            property of camera or video file.
+            </summary>
+            <param name="capture">video capturing structure.</param>
+            <param name="property_id">property identifier. Can be one of the following:
+            CV_CAP_PROP_POS_MSEC - film current position in milliseconds or video capture timestamp
+            CV_CAP_PROP_POS_FRAMES - 0-based index of the frame to be decoded/captured next
+            CV_CAP_PROP_POS_AVI_RATIO - relative position of video file (0 - start of the film, 1 - end of the film)
+            CV_CAP_PROP_FRAME_WIDTH - width of frames in the video stream
+            CV_CAP_PROP_FRAME_HEIGHT - height of frames in the video stream
+            CV_CAP_PROP_FPS - frame rate
+            CV_CAP_PROP_FOURCC - 4-character code of codec. CV_CAP_PROP_FRAME_COUNT - number of frames in video file.
+            </param>
+            <param name="value">the value to be set</param>
+        </member>
+        <member name="M:openCV.cvlib.CvCreateVideoWriter(System.String,System.Int32,System.Double,openCV.CvSize,System.Int32)">
+            <summary>
+            The function cvCreateVideoWriter creates video writer structure.
+            </summary>
+            <param name="filename">Name of the output video file.</param>
+            <param name="fourcc">4-character code of codec used to compress 
+            the frames. For example, CvCreateFourCC('P','I','M','1') is MPEG-1 codec, 
+            CvCreateFourCC('M','J','P','G') is motion-jpeg codec etc. 
+            Under Win32 it is possible to pass -1 in order to choose compression 
+            method and additional compression parameters from dialog.</param>
+            <param name="fps">Framerate of the created video stream.</param>
+            <param name="frame_size">Size of video frames</param>
+            <param name="is_color">If it is not zero, the encoder will expect 
+            and encode color frames, otherwise it will work with grayscale 
+            frames (the flag is currently supported on Windows only).</param>
+            <returns>Video writer structure (ptr only)</returns>
+        </member>
+        <member name="M:openCV.cvlib.CvWriteFrame(openCV.CvVideoWriter,openCV.IplImage@)">
+            <summary>
+            Writes the given IplImage to the CvVideoWriter instance passed in.
+            </summary>
+            <param name="writer">The CvVideoWriter to write to</param>
+            <param name="image">The image to write</param>
+        </member>
+        <member name="M:openCV.cvlib.CvCreateFourCC(System.Char,System.Char,System.Char,System.Char)">
+            <summary>
+            Creates the int required for CvCreateVideoWriter that determines which codec to use.
+            CvCreateFourCC('P','I','M','1') is MPEG-1 codec, 
+            CvCreateFourCC('M','J','P','G') is motion-jpeg codec etc. 
+            </summary>
+        </member>
+        <member name="M:openCV.cvlib.CvReleaseVideoWriter(openCV.CvVideoWriter@)">
+            <summary>
+            The function cvReleaseVideoWriter finishes writing 
+            to video file and releases the structure.
+            </summary>
+            <param name="vw">Pointer to video file writer structure.</param>
+        </member>
+        <member name="M:openCV.cvlib.CvConvertImage(openCV.IplImage@,openCV.IplImage@,System.Int32)">
+            <summary>
+            ConvertImage
+            The function cvConvertImage converts one image to another 
+            and flips the result vertically if required. 
+            The function is used by cvShowImage.
+            </summary>
+            <param name="src">Source image.</param>
+            <param name="dst">Destination image. Must be single-channel or 3-channel 8-bit image.</param>
+            <param name="flags">The operation flags:
+            CV_CVTIMG_FLIP - flip the image vertically 
+            CV_CVTIMG_SWAP_RB - swap red and blue channels. 
+            In OpenCV color images have BGR channel order, 
+            however on some systems the order needs to be reversed before 
+            displaying the image (cvShowImage does this automatically).</param>
+        </member>
+        <member name="M:openCV.cvlib.CvNamedWindow(System.String,System.Int32)">
+            <summary>
+            cvNamedWindow 
+            Creates window 
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:openCV.cvlib.CvDestroyWindow(System.String)">
+            <summary>
+            cvDestroyWindow 
+            Destroys a window 
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:openCV.cvlib.CvDestroyAllWindows">
+            <summary>
+            cvDestroyAllWindows 
+            Destroys all the HighGUI windows 
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:openCV.cvlib.CvMoveWindow(System.String,System.Int32,System.Int32)">
+            <summary>
+            cvMoveWindow 
+            Sets window position 
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:openCV.cvlib.CvGetWindowHandle(System.String)">
+            <summary>
+            cvGetWindowHandle 
+            Gets window handle by name 
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:openCV.cvlib.CvGetWindowName(System.IntPtr)">
+            <summary>
+            cvGetWindowName 
+            Gets window name by handle 
+            </summary>
+            <param name="window_handle"></param>
+            <returns></returns>
+        </member>
+        <member name="M:openCV.cvlib.CvShowImage(System.String,openCV.IplImage@)">
+            <summary>
+            The function cvShowImage shows the image
+            in the specified window. If the window was created
+            with CV_WINDOW_AUTOSIZE flag then the image is shown
+            with its original size, otherwise the image is scaled
+            to fit the window.
+            </summary>
+            <param name="name">The name of the window.</param>
+            <param name="image">The image to be shown.</param>
+        </member>
+        <member name="M:openCV.cvlib.CvShowImageFast(System.String,System.IntPtr)">
+            <summary>
+            The function cvShowImage shows the image
+            in the specified window. If the window was created
+            with CV_WINDOW_AUTOSIZE flag then the image is shown
+            with its original size, otherwise the image is scaled
+            to fit the window.
+            </summary>
+            <param name="name">The name of the window.</param>
+            <param name="image">image pointer as returned by some special functions</param>
+        </member>
+        <member name="M:openCV.cvlib.CvCreateTrackbar(System.String,System.String,System.Int32@,System.Int32,openCV.cvlib.OnTrackbarChangeCallback)">
+            <summary>
+            Creates the trackbar and attaches it to the specified window
+            </summary>
+            <param name="trackbar_name">The trackbar name.</param>
+            <param name="window_name">The window name.</param>
+            <param name="value">Trackbar value (output)</param>
+            <param name="count">Count.</param>
+            <param name="on_change">The on_change callback (delegate)</param>
+            <returns>not documented</returns>
+        </member>
+        <member name="M:openCV.cvlib.CvGetTrackbarPos(System.String,System.String)">
+            <summary>
+            Retrieves trackbar position
+            </summary>
+            <param name="trackbar_name">The trackbar name.</param>
+            <param name="window_name">The window name.</param>
+            <returns>trackbar position</returns>
+        </member>
+        <member name="M:openCV.cvlib.CvSetTrackbarPos(System.String,System.String,System.Int32)">
+            <summary>
+            Sets trackbar position
+            </summary>
+            <param name="trackbar_name">The trackbar name.</param>
+            <param name="window_name">The window name.</param>
+            <param name="pos">The trackbar pos.</param>
+        </member>
+        <member name="M:openCV.cvlib.CvSetMouseCallback(System.String,openCV.cvlib.OnMouseCallback,System.IntPtr)">
+            <summary>
+            The function cvSetMouseCallback sets the callback function for mouse events occuting within the specified window
+            </summary>
+            <param name="window_name">The window_name.</param>
+            <param name="on_mouse">The on_mouse callback delegate.</param>
+            <param name="param">The param.</param>
+        </member>
+        <member name="M:openCV.cvlib.CvWaitKey(System.Int32)">
+            <summary>
+            Waits for a pressed key
+            </summary>
+            <param name="delay">The delay.</param>
             <returns></returns>
         </member>
         <member name="M:openCV.cvlib.CvCreateImage(openCV.CvSize,System.Int32,System.Int32)">
@@ -3432,327 +3764,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:openCV.cvlib.CvLoadImage(System.String,System.Int32)">
-            <summary>
-            Loads an image from file
-            </summary>
-            <param name="path">Path to the file to be loaded.</param>
-            <param name="flags">Specifies colorness and depth of the loaded image:
-            The colorness specifies whether the loaded image is to be converted to 3 channels (CV_LOAD_IMAGE_COLOR), 1 channel (CV_LOAD_IMAGE_GRAYSCALE), or left as it was in the input file (CV_LOAD_IMAGE_ANYCOLOR).
-            Depth specifies whether the loaded image is to be converted to 8 bits per pixel per color channel as was customary in previous versions of OpenCV or left as they were in the input file. If CV_LOAD_IMAGE_ANYDEPTH is passed the pixel format can be 8 bit unsigned, 16 bit unsigned, 32 bit signed or 32 bit floating point.
-            If conflicting flags are passed the flag with the smaller numerical value wins. That is if CV_LOAD_IMAGE_COLOR | CV_LOAD_IMAGE_ANYCOLOR is passed the image is loaded with 3 channels. CV_LOAD_IMAGE_ANYCOLOR is equivalent to specifying CV_LOAD_IMAGE_UNCHANGED. However, CV_LOAD_IMAGE_ANYCOLOR has the advantage that it can be combined with CV_LOAD_IMAGE_ANYDEPTH. So CV_LOAD_IMAGE_UNCHANGED should not be used any longer.
-            If you want to load the image as truthfully as possible pass CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_ANYCOLOR.</param>
-            <returns>IplImage</returns>
-        </member>
-        <member name="M:openCV.cvlib.CvSaveImage(System.String,openCV.IplImage@)">
-            <summary>
-            Loads an image from file
-            </summary>
-            <param name="path">Name of file to be loaded.</param>
-            <param name="flags">Specifies colorness and depth of the loaded image:
-            The colorness specifies whether the loaded image is to be converted to 3 channels (CV_LOAD_IMAGE_COLOR), 1 channel (CV_LOAD_IMAGE_GRAYSCALE), or left as it was in the input file (CV_LOAD_IMAGE_ANYCOLOR).
-            Depth specifies whether the loaded image is to be converted to 8 bits per pixel per color channel as was customary in previous versions of OpenCV or left as they were in the input file. If CV_LOAD_IMAGE_ANYDEPTH is passed the pixel format can be 8 bit unsigned, 16 bit unsigned, 32 bit signed or 32 bit floating point.
-            If conflicting flags are passed the flag with the smaller numerical value wins. That is if CV_LOAD_IMAGE_COLOR | CV_LOAD_IMAGE_ANYCOLOR is passed the image is loaded with 3 channels. CV_LOAD_IMAGE_ANYCOLOR is equivalent to specifying CV_LOAD_IMAGE_UNCHANGED. However, CV_LOAD_IMAGE_ANYCOLOR has the advantage that it can be combined with CV_LOAD_IMAGE_ANYDEPTH. So CV_LOAD_IMAGE_UNCHANGED should not be used any longer.
-            If you want to load the image as truthfully as possible pass CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_ANYCOLOR.</param>
-            <returns>IplImage</returns>
-        </member>
-        <member name="M:openCV.cvlib.ToBitmap(openCV.IplImage,System.Boolean)">
-            <summary>
-            Converts IplImage to Windows Bitmap
-            Only IPL_DEPTH_8U is supported
-            Only interleaved images are supported
-            Only 3 channels Images are supported
-            </summary>
-            <param name="image">IplImage to convert</param>
-            <param name="dispose">If true IplImage will be disposed</param>
-            <returns>Bitmap with Format24bppRgb</returns>
-        </member>
-        <member name="M:openCV.cvlib.ToIplImage(System.Drawing.Bitmap,System.Boolean)">
-            <summary>
-            Converts Bitmap Image to IplImage
-            Only PixelFormat.Format24bppRgb or 
-            PixelFormat.Format8bppIndexed is supported
-            </summary>
-            <param name="image">Bitmap to convert</param>
-            <param name="dispose">If true the Bitmap will be disposed</param>
-            <returns>IplImage either 3 or 1 channels with Depht 8U</returns>
-        </member>
-        <member name="M:openCV.cvlib.RoiParam(openCV.IplImage,System.Int32@,System.Int32@,System.Int32@,System.Int32@,System.Int32@)">
-            <summary>
-            get ROI params
-            </summary>
-            <param name="start"></param>
-            <param name="rows"></param>
-            <param name="elementCount"></param>
-            <param name="byteWidth"></param>
-            <param name="widthStep"></param>
-        </member>
-        <member name="M:openCV.cvlib.memcpy(System.IntPtr,System.IntPtr,System.Int32)">
-            <summary>
-            classic memcopy
-            </summary>
-            <param name="dest">dst ptr</param>
-            <param name="src">src ptr</param>
-            <param name="len">lenght of mem block</param>
-        </member>
-        <member name="M:openCV.cvlib.CvCreateFileCapture(System.String)">
-            <summary>
-            The function cvCreateFileCapture allocates and 
-            initialized the CvCapture structure for reading the 
-            video stream from the specified file.
-            </summary>
-            <param name="path">Name of the video file.</param>
-            <returns>CvCapture structure</returns>
-        </member>
-        <member name="M:openCV.cvlib.CvCreateCameraCapture(System.Int32)">
-            <summary>
-            The function cvCreateCameraCapture allocates and initialized 
-            the CvCapture structure for reading a video stream from the 
-            camera. Currently two camera interfaces can be used on Windows: 
-            Video for Windows (VFW) and Matrox Imaging Library (MIL); 
-            </summary>
-            <param name="idx">Index of the camera to be used. If there is 
-            only one camera or it does not matter what camera to use -1 
-            may be passed.</param>
-            <returns>CvCapture structure</returns>
-        </member>
-        <member name="M:openCV.cvlib.CvReleaseCapture(openCV.CvCapture@)">
-            <summary>
-            The function cvReleaseCapture releases the CvCapture
-            structure allocated by cvCreateFileCapture or cvCreateCameraCapture.
-            </summary>
-            <param name="capture">Video capturing structure.</param>
-        </member>
-        <member name="M:openCV.cvlib.CvGrabFrame(openCV.CvCapture@)">
-            <summary>
-            The function cvGrabFrame grabs the frame from camera or file. 
-            The grabbed frame is stored internally. The purpose of this 
-            function is to grab frame fast that is important for 
-            syncronization in case of reading from several cameras simultaneously. 
-            The grabbed frames are not exposed because they may be stored in 
-            compressed format (as defined by camera/driver). To retrieve the 
-            grabbed frame, cvRetrieveFrame should be used.
-            </summary>
-            <param name="capture">video capturing structure.</param>
-            <returns>1 if succsess</returns>
-        </member>
-        <member name="M:openCV.cvlib.CvRetrieveFrame(openCV.CvCapture@)">
-            <summary>
-            The function cvRetrieveFrame returns the pointer to the image 
-            grabbed with cvGrabFrame function. The returned image should 
-            not be released or modified by user.
-            </summary>
-            <param name="capture">video capturing structure.</param>
-            <returns>Image</returns>
-        </member>
-        <member name="M:openCV.cvlib.CvQueryFrame(openCV.CvCapture@)">
-            <summary>
-            The function cvQueryFrame grabs a frame from camera 
-            or video file, decompresses and returns it. This function 
-            is just a combination of cvGrabFrame and cvRetrieveFrame 
-            in one call. The returned image should not be released or 
-            modified by user.
-            </summary>
-            <param name="capture">video capturing structure.</param>
-            <returns>Image</returns>
-        </member>
-        <member name="M:openCV.cvlib.CvQueryFrame(openCV.CvCapture@,System.Boolean)">
-            <summary>
-            The function cvQueryFrameFast is same like query frame
-            but returns pointer and has optional Flip param
-            </summary>
-            <param name="capture">video capturing structure.</param>
-            <returns>Image</returns>
-        </member>
-        <member name="M:openCV.cvlib.cvGetCaptureProperty(openCV.CvCapture,System.Int32)">
-            <summary>
-            The function cvGetCaptureProperty retrieves the specified 
-            property of camera or video file.
-            </summary>
-            <param name="capture">video capturing structure.</param>
-            <param name="property_id">property identifier. Can be one of the following:
-            CV_CAP_PROP_POS_MSEC - film current position in milliseconds or video capture timestamp
-            CV_CAP_PROP_POS_FRAMES - 0-based index of the frame to be decoded/captured next
-            CV_CAP_PROP_POS_AVI_RATIO - relative position of video file (0 - start of the film, 1 - end of the film)
-            CV_CAP_PROP_FRAME_WIDTH - width of frames in the video stream
-            CV_CAP_PROP_FRAME_HEIGHT - height of frames in the video stream
-            CV_CAP_PROP_FPS - frame rate
-            CV_CAP_PROP_FOURCC - 4-character code of codec. CV_CAP_PROP_FRAME_COUNT - number of frames in video file.
-            </param>
-            <returns>value</returns>
-        </member>
-        <member name="M:openCV.cvlib.CvSetCaptureProperty(openCV.CvCapture@,System.Int32,System.Double)">
-            <summary>
-            The function cvGetCaptureProperty sets the specified 
-            property of camera or video file.
-            </summary>
-            <param name="capture">video capturing structure.</param>
-            <param name="property_id">property identifier. Can be one of the following:
-            CV_CAP_PROP_POS_MSEC - film current position in milliseconds or video capture timestamp
-            CV_CAP_PROP_POS_FRAMES - 0-based index of the frame to be decoded/captured next
-            CV_CAP_PROP_POS_AVI_RATIO - relative position of video file (0 - start of the film, 1 - end of the film)
-            CV_CAP_PROP_FRAME_WIDTH - width of frames in the video stream
-            CV_CAP_PROP_FRAME_HEIGHT - height of frames in the video stream
-            CV_CAP_PROP_FPS - frame rate
-            CV_CAP_PROP_FOURCC - 4-character code of codec. CV_CAP_PROP_FRAME_COUNT - number of frames in video file.
-            </param>
-            <param name="value">the value to be set</param>
-        </member>
-        <member name="M:openCV.cvlib.CvCreateVideoWriter(System.String,System.Int32,System.Double,openCV.CvSize,System.Int32)">
-            <summary>
-            The function cvCreateVideoWriter creates video writer structure.
-            </summary>
-            <param name="filename">Name of the output video file.</param>
-            <param name="fourcc">4-character code of codec used to compress 
-            the frames. For example, CV_FOURCC('P','I','M','1') is MPEG-1 codec, 
-            CV_FOURCC('M','J','P','G') is motion-jpeg codec etc. 
-            Under Win32 it is possible to pass -1 in order to choose compression 
-            method and additional compression parameters from dialog.</param>
-            <param name="fps">Framerate of the created video stream.</param>
-            <param name="frame_size">Size of video frames</param>
-            <param name="is_color">If it is not zero, the encoder will expect 
-            and encode color frames, otherwise it will work with grayscale 
-            frames (the flag is currently supported on Windows only).</param>
-            <returns>Video writer structure (ptr only)</returns>
-        </member>
-        <member name="M:openCV.cvlib.CvReleaseVideoWriter(openCV.CvVideoWriter@)">
-            <summary>
-            The function cvReleaseVideoWriter finishes writing 
-            to video file and releases the structure.
-            </summary>
-            <param name="vw">Pointer to video file writer structure.</param>
-        </member>
-        <member name="M:openCV.cvlib.CvConvertImage(openCV.IplImage@,openCV.IplImage@,System.Int32)">
-            <summary>
-            ConvertImage
-            The function cvConvertImage converts one image to another 
-            and flips the result vertically if required. 
-            The function is used by cvShowImage.
-            </summary>
-            <param name="src">Source image.</param>
-            <param name="dst">Destination image. Must be single-channel or 3-channel 8-bit image.</param>
-            <param name="flags">The operation flags:
-            CV_CVTIMG_FLIP - flip the image vertically 
-            CV_CVTIMG_SWAP_RB - swap red and blue channels. 
-            In OpenCV color images have BGR channel order, 
-            however on some systems the order needs to be reversed before 
-            displaying the image (cvShowImage does this automatically).</param>
-        </member>
-        <member name="M:openCV.cvlib.CvNamedWindow(System.String,System.Int32)">
-            <summary>
-            cvNamedWindow 
-            Creates window 
-            </summary>
-            <param name="name"></param>
-            <returns></returns>
-        </member>
-        <member name="M:openCV.cvlib.CvDestroyWindow(System.String)">
-            <summary>
-            cvDestroyWindow 
-            Destroys a window 
-            </summary>
-            <param name="name"></param>
-            <returns></returns>
-        </member>
-        <member name="M:openCV.cvlib.CvDestroyAllWindows">
-            <summary>
-            cvDestroyAllWindows 
-            Destroys all the HighGUI windows 
-            </summary>
-            <param name="name"></param>
-            <returns></returns>
-        </member>
-        <member name="M:openCV.cvlib.CvMoveWindow(System.String,System.Int32,System.Int32)">
-            <summary>
-            cvMoveWindow 
-            Sets window position 
-            </summary>
-            <param name="name"></param>
-            <returns></returns>
-        </member>
-        <member name="M:openCV.cvlib.CvGetWindowHandle(System.String)">
-            <summary>
-            cvGetWindowHandle 
-            Gets window handle by name 
-            </summary>
-            <param name="name"></param>
-            <returns></returns>
-        </member>
-        <member name="M:openCV.cvlib.CvGetWindowName(System.IntPtr)">
-            <summary>
-            cvGetWindowName 
-            Gets window name by handle 
-            </summary>
-            <param name="window_handle"></param>
-            <returns></returns>
-        </member>
-        <member name="M:openCV.cvlib.CvShowImage(System.String,openCV.IplImage@)">
-            <summary>
-            The function cvShowImage shows the image
-            in the specified window. If the window was created
-            with CV_WINDOW_AUTOSIZE flag then the image is shown
-            with its original size, otherwise the image is scaled
-            to fit the window.
-            </summary>
-            <param name="name">The name of the window.</param>
-            <param name="image">The image to be shown.</param>
-        </member>
-        <member name="M:openCV.cvlib.CvShowImageFast(System.String,System.IntPtr)">
-            <summary>
-            The function cvShowImage shows the image
-            in the specified window. If the window was created
-            with CV_WINDOW_AUTOSIZE flag then the image is shown
-            with its original size, otherwise the image is scaled
-            to fit the window.
-            </summary>
-            <param name="name">The name of the window.</param>
-            <param name="image">image pointer as returned by some special functions</param>
-        </member>
-        <member name="M:openCV.cvlib.CvCreateTrackbar(System.String,System.String,System.Int32@,System.Int32,openCV.cvlib.OnTrackbarChangeCallback)">
-            <summary>
-            Creates the trackbar and attaches it to the specified window
-            </summary>
-            <param name="trackbar_name">The trackbar name.</param>
-            <param name="window_name">The window name.</param>
-            <param name="value">Trackbar value (output)</param>
-            <param name="count">Count.</param>
-            <param name="on_change">The on_change callback (delegate)</param>
-            <returns>not documented</returns>
-        </member>
-        <member name="M:openCV.cvlib.CvGetTrackbarPos(System.String,System.String)">
-            <summary>
-            Retrieves trackbar position
-            </summary>
-            <param name="trackbar_name">The trackbar name.</param>
-            <param name="window_name">The window name.</param>
-            <returns>trackbar position</returns>
-        </member>
-        <member name="M:openCV.cvlib.CvSetTrackbarPos(System.String,System.String,System.Int32)">
-            <summary>
-            Sets trackbar position
-            </summary>
-            <param name="trackbar_name">The trackbar name.</param>
-            <param name="window_name">The window name.</param>
-            <param name="pos">The trackbar pos.</param>
-        </member>
-        <member name="M:openCV.cvlib.CvSetMouseCallback(System.String,openCV.cvlib.OnMouseCallback,System.IntPtr)">
-            <summary>
-            The function cvSetMouseCallback sets the callback function for mouse events occuting within the specified window
-            </summary>
-            <param name="window_name">The window_name.</param>
-            <param name="on_mouse">The on_mouse callback delegate.</param>
-            <param name="param">The param.</param>
-        </member>
-        <member name="M:openCV.cvlib.CvWaitKey(System.Int32)">
-            <summary>
-            Waits for a pressed key
-            </summary>
-            <param name="delay">The delay.</param>
-            <returns></returns>
-        </member>
-        <member name="T:openCV.CvCapture">
-            Black box cvcapture
-        </member>
         <member name="T:openCV.CvMoments">
             * spatial and central moments */
         </member>
@@ -5383,6 +5394,9 @@
             <summary>
             Internal used Structure
             </summary>
+        </member>
+        <member name="T:openCV.CvCapture">
+            Black box cvcapture
         </member>
     </members>
 </doc>
