@@ -16,6 +16,17 @@ namespace WebVideoLibrary
 {
     public partial class frmMain : Form
     {
+        /// <summary>
+        /// An enumeration for each clip in Tier 3
+        /// </summary>
+        private enum Tier3Clip
+        {
+            Clip1 = 1,
+            Clip2 = 2,
+            Clip3 = 3,
+            Clip4 = 4
+        }
+
         public frmMain()
         {
             InitializeComponent();
@@ -88,10 +99,19 @@ namespace WebVideoLibrary
             AppendLogLine("Input Video total # frames in video: " + numTotalFramesInVideo);
             AppendLogLine("Input Video length in seconds: " + Math.Round(vidLengthInSeconds, 2, MidpointRounding.AwayFromZero));
 
+
             //We need to grab the first frame before being able to get the width and height
             IplImage image = cvlib.CvQueryFrame(ref capture);
             int vidWidth = (int)cvlib.cvGetCaptureProperty(capture, cvlib.CV_CAP_PROP_FRAME_WIDTH);
             int vidHeight = (int)cvlib.cvGetCaptureProperty(capture, cvlib.CV_CAP_PROP_FRAME_HEIGHT);
+            Bitmap bmpImage = cvlib.ToBitmap(image, false);
+
+            Dictionary<Tier3Clip, DominantColorCalculator> dominantColorCalculators = new Dictionary<Tier3Clip, DominantColorCalculator>();
+            dominantColorCalculators.Add(Tier3Clip.Clip1, new DominantColorCalculator(vidHeight, vidWidth));
+            dominantColorCalculators.Add(Tier3Clip.Clip2, new DominantColorCalculator(vidHeight, vidWidth));
+            dominantColorCalculators.Add(Tier3Clip.Clip3, new DominantColorCalculator(vidHeight, vidWidth));
+            dominantColorCalculators.Add(Tier3Clip.Clip4, new DominantColorCalculator(vidHeight, vidWidth));
+
 
             int numFramesPerTier2Clip = numTotalFramesInVideo / 2;
             AppendLogLine("Clips in tier 2 should have: " + numFramesPerTier2Clip + " frames");
@@ -112,7 +132,7 @@ namespace WebVideoLibrary
 
             int tier2Clip = 1; //Start out on tier 2 clip 1, this will go from 1 -> 2
             int tier3Clip = 1; //Start out on tier 3 clip 1, this will go from 1 -> 4
-                        
+
             //get the selected output FourCC from the combo box.
             int outputFourCC = (int)((ListItem)cboOutputCodec.SelectedItem).Value;
             CvSize outputVideoSize = new CvSize(vidWidth, vidHeight);
@@ -131,7 +151,7 @@ namespace WebVideoLibrary
             cvlib.CvFlip(ref image, ref image, 0);
 
             //show the first frame before the while loop
-            ShowImage(image);
+            ShowImage(bmpImage);
 
             while (totalNumFramesUsed < numTotalFramesInVideo)
             {
@@ -165,7 +185,8 @@ namespace WebVideoLibrary
 
                 cvlib.CvFlip(ref image, ref image, 0);
 
-                ShowImage(image);
+                Bitmap btmpImage = cvlib.ToBitmap(image, false);
+                ShowImage(btmpImage);
 
                 Application.DoEvents();
             }
@@ -177,6 +198,7 @@ namespace WebVideoLibrary
             cvlib.CvReleaseCapture(ref capture);
         }
 
+   
         /// <summary>
         /// Appends the text passed in with a new line character and places it in the log textbox.
         /// </summary>
@@ -217,31 +239,24 @@ namespace WebVideoLibrary
         /// Shows the image in the picturebox on the form
         /// </summary>
         /// <param name="image">The image to show in the picturebox.</param>
-        private void ShowImage(IplImage image)
+        private void ShowImage(Bitmap image)
         {
-            //make sure we have an image to show
-            if (image.imageData == IntPtr.Zero)
-            {
-                return;
-            }
-
-            Bitmap bmpImage = cvlib.ToBitmap(image, false);
             if (pictureBox.Image != null)
             {
                 pictureBox.Image.Dispose();
             }
-            pictureBox.Image = bmpImage;
+            pictureBox.Image = image;
 
 
             //make sure the form is big enough to show the complete image.
-            if (pictureBox.Height < bmpImage.Height)
+            if (pictureBox.Height < image.Height)
             {
-                this.Height += (bmpImage.Height - pictureBox.Height);
+                this.Height += (image.Height - pictureBox.Height);
             }
 
-            if (pictureBox.Width < bmpImage.Width)
+            if (pictureBox.Width < image.Width)
             {
-                this.Width += (bmpImage.Width - pictureBox.Width);
+                this.Width += (image.Width - pictureBox.Width);
             }
         }
     }
