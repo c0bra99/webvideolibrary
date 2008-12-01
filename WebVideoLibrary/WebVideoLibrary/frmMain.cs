@@ -30,6 +30,12 @@ namespace WebVideoLibrary
             openFileDialog1.Filter = "Video files|*.avi;*.divx;*.mpg;*.wmv;*.mp4|All Files|*.*";
             openFileDialog1.FileName = string.Empty; //initial filename when box pops up = nothing
             txtVideoInputPath.Text = "c:\\temp\\bouncing_ball.divx";//so we dont have to browse everytime we test
+
+            //load the output codec combobox with some predefined FOURCC's
+            cboOutputCodec.Items.Add(new ListItem("DivX", cvlib.CvCreateFourCC('D', 'I', 'V', 'X')));
+            cboOutputCodec.Items.Add(new ListItem("Uncompressed DIB", cvlib.CvCreateFourCC('D', 'I', 'B', ' ')));
+            cboOutputCodec.Items.Add(new ListItem("Motion JPG", cvlib.CvCreateFourCC('M', 'J', 'P', 'G')));
+            cboOutputCodec.SelectedIndex = 0;
         }
 
 
@@ -70,67 +76,123 @@ namespace WebVideoLibrary
             }
 
             int numTotalFramesInVideo = (int)cvlib.cvGetCaptureProperty(capture, cvlib.CV_CAP_PROP_FRAME_COUNT);
-            int fps = (int)cvlib.cvGetCaptureProperty(capture, cvlib.CV_CAP_PROP_FPS);
+            double fps = cvlib.cvGetCaptureProperty(capture, cvlib.CV_CAP_PROP_FPS);
             int fourcc = (int)cvlib.cvGetCaptureProperty(capture, cvlib.CV_CAP_PROP_FOURCC);
+            double vidLengthInSeconds = numTotalFramesInVideo / fps;
 
-            txtLog.AppendText("Input Video Codec FourCC: " + FromFourCC(fourcc) + Environment.NewLine);
-            int vidLengthInSeconds = numTotalFramesInVideo / fps;
-            int numFramesPerTier2Clip = numTotalFramesInVideo / 4;
-            if (numFramesPerTier2Clip * 4 != numTotalFramesInVideo)
-            {
-                int difference = numTotalFramesInVideo - (numFramesPerTier2Clip * 4);
-                //add this difference # of frames to the last clip to make up for integer division
-            }
-            int numFramesPerTier3Clip = numFramesPerTier2Clip / 2;
-
-            int numFramesShown = 0;
+            AppendLogLine("Input Video Codec FourCC: " + FromFourCC(fourcc));
+            AppendLogLine("Input Video FPS: " + fps);
+            AppendLogLine("Input Video total # frames in video: " + numTotalFramesInVideo);
+            AppendLogLine("Input Video length in seconds: " + Math.Round(vidLengthInSeconds, 2, MidpointRounding.AwayFromZero));
 
             //We need to grab the first frame before being able to get the width and height
             IplImage image = cvlib.CvQueryFrame(ref capture);
             int vidWidth = (int)cvlib.cvGetCaptureProperty(capture, cvlib.CV_CAP_PROP_FRAME_WIDTH);
             int vidHeight = (int)cvlib.cvGetCaptureProperty(capture, cvlib.CV_CAP_PROP_FRAME_HEIGHT);
 
-            string dir = Path.GetDirectoryName(txtVideoInputPath.Text);
-            string file = Path.GetFileNameWithoutExtension(txtVideoInputPath.Text);
-            string extension = ".avi"; //always use .avi, if you use .divx, it doesnt write the frames correctly for some reason.
+            int numFramesPerTier2Clip = numTotalFramesInVideo / 2;
+            AppendLogLine("Clips in tier 2 should have: " + numFramesPerTier2Clip + " frames");
+            if (numFramesPerTier2Clip * 2 != numTotalFramesInVideo)
+            {
+                int difference = numTotalFramesInVideo - (numFramesPerTier2Clip * 2);
+                AppendLogLine("Last clip in tier 2 should have: " + (numFramesPerTier2Clip + difference) + " frames");
+                //add this difference # of frames to the last clip to make up for integer division
+            }
+            int numFramesPerTier3Clip = numFramesPerTier2Clip / 2;
+            AppendLogLine("Clips in tier 3 should have: " + numFramesPerTier3Clip + " frames");
+            if (numFramesPerTier3Clip * 4 != numTotalFramesInVideo)
+            {
+                int difference = numTotalFramesInVideo - (numFramesPerTier3Clip * 4);
+                AppendLogLine("Last clip in tier 3 should have: " + (numFramesPerTier3Clip + difference) + " frames");
+                //add this difference # of frames to the last clip to make up for integer division
+            }
 
-            string outputVideoPath = dir + "\\" + file + "-Tier2Clip1" + extension;
-            CvVideoWriter vidWriter = cvlib.CvCreateVideoWriter(outputVideoPath, cvlib.CvCreateFourCC('D', 'I', 'B', ' '), fps, new CvSize(vidWidth, vidHeight), 1);
+            int tier2Clip = 1; //Start out on tier 2 clip 1, this will go from 1 -> 2
+            int tier3Clip = 1; //Start out on tier 3 clip 1, this will go from 1 -> 4
+                        
+            //get the selected output FourCC from the combo box.
+            int outputFourCC = (int)((ListItem)cboOutputCodec.SelectedItem).Value;
+            CvSize outputVideoSize = new CvSize(vidWidth, vidHeight);
+            CvVideoWriter tier2VidWriter = cvlib.CvCreateVideoWriter(GetOutputPath(2, tier2Clip), outputFourCC, fps, outputVideoSize, 1);
+            CvVideoWriter tier3VidWriter = cvlib.CvCreateVideoWriter(GetOutputPath(3, tier3Clip), outputFourCC, fps, outputVideoSize, 1);
 
-            //flip the input image
+            cvlib.CvWriteFrame(tier2VidWriter, ref image);
+            cvlib.CvWriteFrame(tier3VidWriter, ref image);
+
+            //increment the number of frames shown counters
+            int totalNumFramesUsed = 1;
+            int tier2FramesUsed = 1;
+            int tier3FramesUsed = 1;
+
+            //flip the input image so it will display on screen properly
             cvlib.CvFlip(ref image, ref image, 0);
 
             //show the first frame before the while loop
             ShowImage(image);
-            cvlib.CvWriteFrame(vidWriter, ref image);
 
-            //increment the number of frames shown counter
-            numFramesShown++;
-            
-            while (numFramesShown < numTotalFramesInVideo)
+            while (totalNumFramesUsed < numTotalFramesInVideo)
             {
+                if ((tier2FramesUsed == numFramesPerTier2Clip) && (tier2Clip != 2))
+                {
+                    AppendLogLine("Frames written to tier 2, clip " + tier2Clip + " = " + tier2FramesUsed);
+                    tier2Clip++;
+                    tier2FramesUsed = 0;
+                    cvlib.CvReleaseVideoWriter(ref tier2VidWriter);
+                    tier2VidWriter = cvlib.CvCreateVideoWriter(GetOutputPath(2, tier2Clip), outputFourCC, fps, outputVideoSize, 1);
+                }
+                if (tier3FramesUsed == numFramesPerTier3Clip && (tier3Clip != 4))
+                {
+                    AppendLogLine("Frames written to tier 3, clip " + tier3Clip + " = " + tier3FramesUsed);
+                    tier3Clip++;
+                    tier3FramesUsed = 0;
+                    cvlib.CvReleaseVideoWriter(ref tier3VidWriter);
+                    tier3VidWriter = cvlib.CvCreateVideoWriter(GetOutputPath(3, tier3Clip), outputFourCC, fps, outputVideoSize, 1);
+                }
+
                 //We need to grab the next frame to show
                 image = cvlib.CvQueryFrame(ref capture);
+
+                cvlib.CvWriteFrame(tier2VidWriter, ref image);
+                cvlib.CvWriteFrame(tier3VidWriter, ref image);
+
+                //increment the number of frames shown counters
+                totalNumFramesUsed++;
+                tier2FramesUsed++;
+                tier3FramesUsed++;
 
                 cvlib.CvFlip(ref image, ref image, 0);
 
                 ShowImage(image);
-                cvlib.CvWriteFrame(vidWriter, ref image);
-
-                numFramesShown++;
 
                 Application.DoEvents();
             }
 
-            cvlib.CvReleaseVideoWriter(ref vidWriter);
+            AppendLogLine("Frames written to tier 2, clip " + tier2Clip + " = " + tier2FramesUsed);
+            AppendLogLine("Frames written to tier 3, clip " + tier3Clip + " = " + tier3FramesUsed);
+            cvlib.CvReleaseVideoWriter(ref tier3VidWriter);
+            cvlib.CvReleaseVideoWriter(ref tier2VidWriter);
             cvlib.CvReleaseCapture(ref capture);
         }
 
 
+        private void AppendLogLine(string text)
+        {
+            txtLog.AppendText(text + Environment.NewLine);
+        }
+
+        private string GetOutputPath(int tier, int clip)
+        {
+            string dir = Path.GetDirectoryName(txtVideoInputPath.Text);
+            string file = Path.GetFileNameWithoutExtension(txtVideoInputPath.Text);
+            string extension = ".avi"; //always use .avi, if you use .divx, or .mjpg it doesn't write the frames for some reason.
+
+            return dir + "\\" + file + "-Tier" + tier + "Clip" + clip + extension;
+        }
+
         /// <summary>
         /// Returns the FourCC human readable characters
         /// </summary>
-        public static string FromFourCC(int fourCC)
+        private static string FromFourCC(int fourCC)
         {
             char[] chars = new char[4];
             chars[0] = (char)(fourCC & 0xFF);
