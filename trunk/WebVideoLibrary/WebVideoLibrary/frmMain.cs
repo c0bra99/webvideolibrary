@@ -65,6 +65,9 @@ namespace WebVideoLibrary
                 return;
             }
 
+            //we will need this when we actually do every file in a directory instead of just 1 video
+            string[] files = Directory.GetFiles("c:\\temp", "*.*", SearchOption.TopDirectoryOnly); //fild all the files in that path with that pattern
+
             //open the file input
             CvCapture capture = cvlib.CvCreateFileCapture(txtVideoInputPath.Text);
 
@@ -174,12 +177,18 @@ namespace WebVideoLibrary
             cvlib.CvReleaseCapture(ref capture);
         }
 
-
+        /// <summary>
+        /// Appends the text passed in with a new line character and places it in the log textbox.
+        /// </summary>
         private void AppendLogLine(string text)
         {
             txtLog.AppendText(text + Environment.NewLine);
         }
 
+
+        /// <summary>
+        /// Gets the output path for a video file, per tier, per clip
+        /// </summary>
         private string GetOutputPath(int tier, int clip)
         {
             string dir = Path.GetDirectoryName(txtVideoInputPath.Text);
