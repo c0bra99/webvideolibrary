@@ -3,6 +3,10 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebVideoLibrary", "WebVideoLibrary\WebVideoLibrary.csproj", "{562FDF9C-E68E-42DC-986B-F403B95BDF68}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebVideoLibraryViewer", "WebVideoLibraryViewer\WebVideoLibraryViewer.csproj", "{3B7DF306-530F-4349-8FDC-FD2AEEE0325F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataLayer", "DataLayer\DataLayer.csproj", "{EA284462-DBF7-4772-A0F5-C1A9DEC66FD9}"
+EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -23,6 +27,18 @@ Global
 		{562FDF9C-E68E-42DC-986B-F403B95BDF68}.Release|Any CPU.Build.0 = Release|Any CPU
 		{562FDF9C-E68E-42DC-986B-F403B95BDF68}.Release|x86.ActiveCfg = Release|x86
 		{562FDF9C-E68E-42DC-986B-F403B95BDF68}.Release|x86.Build.0 = Release|x86
+		{3B7DF306-530F-4349-8FDC-FD2AEEE0325F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B7DF306-530F-4349-8FDC-FD2AEEE0325F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B7DF306-530F-4349-8FDC-FD2AEEE0325F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3B7DF306-530F-4349-8FDC-FD2AEEE0325F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B7DF306-530F-4349-8FDC-FD2AEEE0325F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B7DF306-530F-4349-8FDC-FD2AEEE0325F}.Release|x86.ActiveCfg = Release|Any CPU
+		{EA284462-DBF7-4772-A0F5-C1A9DEC66FD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA284462-DBF7-4772-A0F5-C1A9DEC66FD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA284462-DBF7-4772-A0F5-C1A9DEC66FD9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EA284462-DBF7-4772-A0F5-C1A9DEC66FD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA284462-DBF7-4772-A0F5-C1A9DEC66FD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA284462-DBF7-4772-A0F5-C1A9DEC66FD9}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -253,7 +253,7 @@ namespace WebVideoLibrary
             string file = Path.GetFileNameWithoutExtension(txtVideoInputPath.Text);
             string extension = ".avi"; //always use .avi, if you use .divx, or .mjpg it doesn't write the frames for some reason.
 
-            return dir + "\\" + file + "-Tier" + tier + "Clip" + clip + extension;
+            return dir + "\\output\\" + file + "-Tier" + tier + "Clip" + clip + extension;
         }
 
         /// <summary>
