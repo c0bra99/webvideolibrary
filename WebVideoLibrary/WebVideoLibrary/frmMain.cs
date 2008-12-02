@@ -103,8 +103,12 @@ namespace WebVideoLibrary
                 return;
             }
 
+            lblCurrFrame.Visible = true;
+            lblTotalFrames.Visible = true;
+
             //Get some stats about the video
             int numTotalFramesInVideo = (int)cvlib.cvGetCaptureProperty(capture, cvlib.CV_CAP_PROP_FRAME_COUNT);
+            lblTotalFrames.Text = "/ " + numTotalFramesInVideo;
             double fps = cvlib.cvGetCaptureProperty(capture, cvlib.CV_CAP_PROP_FPS);
             int fourcc = (int)cvlib.cvGetCaptureProperty(capture, cvlib.CV_CAP_PROP_FOURCC);
             double vidLengthInSeconds = numTotalFramesInVideo / fps;
@@ -201,6 +205,8 @@ namespace WebVideoLibrary
                 //Add this frame to our dominant color calculations
                 dominantColorCalculators[tier3Clip].AddFrame(bmpImage);
                 ShowImage(bmpImage);
+
+                lblCurrFrame.Text = totalNumFramesUsed.ToString();
 
                 Application.DoEvents();
             }

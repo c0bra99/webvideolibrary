@@ -36,10 +36,12 @@ namespace WebVideoLibrary
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.lblTotalFrames = new System.Windows.Forms.Label();
+            this.lblCurrFrame = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.cboOutputCodec = new System.Windows.Forms.ComboBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.txtLog = new System.Windows.Forms.TextBox();
-            this.cboOutputCodec = new System.Windows.Forms.ComboBox();
-            this.label2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -48,9 +50,9 @@ namespace WebVideoLibrary
             // 
             // btnStart
             // 
-            this.btnStart.Location = new System.Drawing.Point(492, 6);
+            this.btnStart.Location = new System.Drawing.Point(442, 6);
             this.btnStart.Name = "btnStart";
-            this.btnStart.Size = new System.Drawing.Size(75, 23);
+            this.btnStart.Size = new System.Drawing.Size(39, 23);
             this.btnStart.TabIndex = 0;
             this.btnStart.Text = "Start";
             this.btnStart.UseVisualStyleBackColor = true;
@@ -93,7 +95,7 @@ namespace WebVideoLibrary
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBox.Location = new System.Drawing.Point(3, 32);
             this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(568, 379);
+            this.pictureBox.Size = new System.Drawing.Size(645, 379);
             this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox.TabIndex = 4;
             this.pictureBox.TabStop = false;
@@ -108,11 +110,13 @@ namespace WebVideoLibrary
             this.tabControl1.Location = new System.Drawing.Point(0, 2);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(582, 440);
+            this.tabControl1.Size = new System.Drawing.Size(659, 440);
             this.tabControl1.TabIndex = 5;
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.lblTotalFrames);
+            this.tabPage1.Controls.Add(this.lblCurrFrame);
             this.tabPage1.Controls.Add(this.label2);
             this.tabPage1.Controls.Add(this.cboOutputCodec);
             this.tabPage1.Controls.Add(this.pictureBox);
@@ -123,10 +127,48 @@ namespace WebVideoLibrary
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(574, 414);
+            this.tabPage1.Size = new System.Drawing.Size(651, 414);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Video";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // lblTotalFrames
+            // 
+            this.lblTotalFrames.AutoSize = true;
+            this.lblTotalFrames.Location = new System.Drawing.Point(550, 9);
+            this.lblTotalFrames.Name = "lblTotalFrames";
+            this.lblTotalFrames.Size = new System.Drawing.Size(33, 13);
+            this.lblTotalFrames.TabIndex = 8;
+            this.lblTotalFrames.Text = "/ 300";
+            this.lblTotalFrames.Visible = false;
+            // 
+            // lblCurrFrame
+            // 
+            this.lblCurrFrame.AutoSize = true;
+            this.lblCurrFrame.Location = new System.Drawing.Point(525, 9);
+            this.lblCurrFrame.Name = "lblCurrFrame";
+            this.lblCurrFrame.Size = new System.Drawing.Size(19, 13);
+            this.lblCurrFrame.TabIndex = 7;
+            this.lblCurrFrame.Text = "10";
+            this.lblCurrFrame.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblCurrFrame.Visible = false;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(233, 9);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(76, 13);
+            this.label2.TabIndex = 6;
+            this.label2.Text = "Output Codec:";
+            // 
+            // cboOutputCodec
+            // 
+            this.cboOutputCodec.FormattingEnabled = true;
+            this.cboOutputCodec.Location = new System.Drawing.Point(315, 6);
+            this.cboOutputCodec.Name = "cboOutputCodec";
+            this.cboOutputCodec.Size = new System.Drawing.Size(121, 21);
+            this.cboOutputCodec.TabIndex = 5;
             // 
             // tabPage2
             // 
@@ -134,7 +176,7 @@ namespace WebVideoLibrary
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(574, 414);
+            this.tabPage2.Size = new System.Drawing.Size(651, 414);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Output Log";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -150,28 +192,11 @@ namespace WebVideoLibrary
             this.txtLog.Size = new System.Drawing.Size(571, 411);
             this.txtLog.TabIndex = 0;
             // 
-            // cboOutputCodec
-            // 
-            this.cboOutputCodec.FormattingEnabled = true;
-            this.cboOutputCodec.Location = new System.Drawing.Point(315, 6);
-            this.cboOutputCodec.Name = "cboOutputCodec";
-            this.cboOutputCodec.Size = new System.Drawing.Size(121, 21);
-            this.cboOutputCodec.TabIndex = 5;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(233, 9);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(76, 13);
-            this.label2.TabIndex = 6;
-            this.label2.Text = "Output Codec:";
-            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(583, 444);
+            this.ClientSize = new System.Drawing.Size(660, 444);
             this.Controls.Add(this.tabControl1);
             this.Name = "frmMain";
             this.Text = "Web Video Library";
@@ -200,6 +225,8 @@ namespace WebVideoLibrary
         private System.Windows.Forms.TextBox txtLog;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ComboBox cboOutputCodec;
+        private System.Windows.Forms.Label lblTotalFrames;
+        private System.Windows.Forms.Label lblCurrFrame;
     }
 }
 
