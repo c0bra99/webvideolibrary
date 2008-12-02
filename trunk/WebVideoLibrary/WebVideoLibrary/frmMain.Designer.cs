@@ -42,6 +42,7 @@ namespace WebVideoLibrary
             this.cboOutputCodec = new System.Windows.Forms.ComboBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.txtLog = new System.Windows.Forms.TextBox();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -95,7 +96,7 @@ namespace WebVideoLibrary
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBox.Location = new System.Drawing.Point(3, 32);
             this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(645, 379);
+            this.pictureBox.Size = new System.Drawing.Size(596, 407);
             this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox.TabIndex = 4;
             this.pictureBox.TabStop = false;
@@ -110,11 +111,12 @@ namespace WebVideoLibrary
             this.tabControl1.Location = new System.Drawing.Point(0, 2);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(659, 440);
+            this.tabControl1.Size = new System.Drawing.Size(610, 497);
             this.tabControl1.TabIndex = 5;
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.progressBar1);
             this.tabPage1.Controls.Add(this.lblTotalFrames);
             this.tabPage1.Controls.Add(this.lblCurrFrame);
             this.tabPage1.Controls.Add(this.label2);
@@ -127,7 +129,7 @@ namespace WebVideoLibrary
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(651, 414);
+            this.tabPage1.Size = new System.Drawing.Size(602, 471);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Video";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -144,12 +146,11 @@ namespace WebVideoLibrary
             // 
             // lblCurrFrame
             // 
-            this.lblCurrFrame.AutoSize = true;
-            this.lblCurrFrame.Location = new System.Drawing.Point(525, 9);
+            this.lblCurrFrame.Location = new System.Drawing.Point(522, 9);
             this.lblCurrFrame.Name = "lblCurrFrame";
-            this.lblCurrFrame.Size = new System.Drawing.Size(19, 13);
+            this.lblCurrFrame.Size = new System.Drawing.Size(31, 13);
             this.lblCurrFrame.TabIndex = 7;
-            this.lblCurrFrame.Text = "10";
+            this.lblCurrFrame.Text = "0";
             this.lblCurrFrame.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.lblCurrFrame.Visible = false;
             // 
@@ -189,14 +190,24 @@ namespace WebVideoLibrary
             this.txtLog.Location = new System.Drawing.Point(3, 3);
             this.txtLog.Multiline = true;
             this.txtLog.Name = "txtLog";
-            this.txtLog.Size = new System.Drawing.Size(571, 411);
+            this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtLog.Size = new System.Drawing.Size(641, 411);
             this.txtLog.TabIndex = 0;
+            // 
+            // progressBar1
+            // 
+            this.progressBar1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.progressBar1.Location = new System.Drawing.Point(3, 445);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(596, 23);
+            this.progressBar1.Step = 1;
+            this.progressBar1.TabIndex = 9;
             // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(660, 444);
+            this.ClientSize = new System.Drawing.Size(611, 501);
             this.Controls.Add(this.tabControl1);
             this.Name = "frmMain";
             this.Text = "Web Video Library";
@@ -227,6 +238,7 @@ namespace WebVideoLibrary
         private System.Windows.Forms.ComboBox cboOutputCodec;
         private System.Windows.Forms.Label lblTotalFrames;
         private System.Windows.Forms.Label lblCurrFrame;
+        private System.Windows.Forms.ProgressBar progressBar1;
     }
 }
 
