@@ -17,6 +17,16 @@ namespace WebVideoLibrary
     public partial class frmMain : Form
     {
         /// <summary>
+        /// An enumeration for each clip in Tier 2
+        /// </summary>
+        private enum Tier2Clip
+        {
+            Clip1 = 1,
+            Clip2 = 2,
+        }
+
+
+        /// <summary>
         /// An enumeration for each clip in Tier 3
         /// </summary>
         private enum Tier3Clip
@@ -26,6 +36,7 @@ namespace WebVideoLibrary
             Clip3 = 3,
             Clip4 = 4
         }
+
 
         public frmMain()
         {
@@ -76,6 +87,9 @@ namespace WebVideoLibrary
                 return;
             }
 
+            //get the selected output FourCC from the combo box.
+            int outputFourCC = (int)((ListItem)cboOutputCodec.SelectedItem).Value;
+            
             //we will need this when we actually do every file in a directory instead of just 1 video
             string[] files = Directory.GetFiles("c:\\temp", "*.*", SearchOption.TopDirectoryOnly); //fild all the files in that path with that pattern
 
@@ -89,6 +103,7 @@ namespace WebVideoLibrary
                 return;
             }
 
+            //Get some stats about the video
             int numTotalFramesInVideo = (int)cvlib.cvGetCaptureProperty(capture, cvlib.CV_CAP_PROP_FRAME_COUNT);
             double fps = cvlib.cvGetCaptureProperty(capture, cvlib.CV_CAP_PROP_FPS);
             int fourcc = (int)cvlib.cvGetCaptureProperty(capture, cvlib.CV_CAP_PROP_FOURCC);
@@ -98,20 +113,6 @@ namespace WebVideoLibrary
             AppendLogLine("Input Video FPS: " + fps);
             AppendLogLine("Input Video total # frames in video: " + numTotalFramesInVideo);
             AppendLogLine("Input Video length in seconds: " + Math.Round(vidLengthInSeconds, 2, MidpointRounding.AwayFromZero));
-
-
-            //We need to grab the first frame before being able to get the width and height
-            IplImage image = cvlib.CvQueryFrame(ref capture);
-            int vidWidth = (int)cvlib.cvGetCaptureProperty(capture, cvlib.CV_CAP_PROP_FRAME_WIDTH);
-            int vidHeight = (int)cvlib.cvGetCaptureProperty(capture, cvlib.CV_CAP_PROP_FRAME_HEIGHT);
-            Bitmap bmpImage = cvlib.ToBitmap(image, false);
-
-            Dictionary<Tier3Clip, DominantColorCalculator> dominantColorCalculators = new Dictionary<Tier3Clip, DominantColorCalculator>();
-            dominantColorCalculators.Add(Tier3Clip.Clip1, new DominantColorCalculator(vidHeight, vidWidth));
-            dominantColorCalculators.Add(Tier3Clip.Clip2, new DominantColorCalculator(vidHeight, vidWidth));
-            dominantColorCalculators.Add(Tier3Clip.Clip3, new DominantColorCalculator(vidHeight, vidWidth));
-            dominantColorCalculators.Add(Tier3Clip.Clip4, new DominantColorCalculator(vidHeight, vidWidth));
-
 
             int numFramesPerTier2Clip = numTotalFramesInVideo / 2;
             AppendLogLine("Clips in tier 2 should have: " + numFramesPerTier2Clip + " frames");
@@ -130,51 +131,61 @@ namespace WebVideoLibrary
                 //add this difference # of frames to the last clip to make up for integer division
             }
 
-            int tier2Clip = 1; //Start out on tier 2 clip 1, this will go from 1 -> 2
-            int tier3Clip = 1; //Start out on tier 3 clip 1, this will go from 1 -> 4
+            Dictionary<Tier3Clip, DominantColorCalculator> dominantColorCalculators = new Dictionary<Tier3Clip, DominantColorCalculator>(4);
 
-            //get the selected output FourCC from the combo box.
-            int outputFourCC = (int)((ListItem)cboOutputCodec.SelectedItem).Value;
-            CvSize outputVideoSize = new CvSize(vidWidth, vidHeight);
-            CvVideoWriter tier2VidWriter = cvlib.CvCreateVideoWriter(GetOutputPath(2, tier2Clip), outputFourCC, fps, outputVideoSize, 1);
-            CvVideoWriter tier3VidWriter = cvlib.CvCreateVideoWriter(GetOutputPath(3, tier3Clip), outputFourCC, fps, outputVideoSize, 1);
-
-            cvlib.CvWriteFrame(tier2VidWriter, ref image);
-            cvlib.CvWriteFrame(tier3VidWriter, ref image);
+            Tier2Clip tier2Clip = Tier2Clip.Clip1; //Start out on tier 2 clip 1, this will go from 1 -> 2
+            Tier3Clip tier3Clip = Tier3Clip.Clip1; //Start out on tier 3 clip 1, this will go from 1 -> 4
 
             //increment the number of frames shown counters
-            int totalNumFramesUsed = 1;
-            int tier2FramesUsed = 1;
-            int tier3FramesUsed = 1;
+            int totalNumFramesUsed = 0;
+            int tier2FramesUsed = 0;
+            int tier3FramesUsed = 0;
 
-            //flip the input image so it will display on screen properly
-            cvlib.CvFlip(ref image, ref image, 0);
+            CvVideoWriter tier2VidWriter = new CvVideoWriter();
+            CvVideoWriter tier3VidWriter = new CvVideoWriter();
+            CvSize outputVideoSize = new CvSize();
 
-            //show the first frame before the while loop
-            ShowImage(bmpImage);
-
+            //This will loop through every frame in the video
             while (totalNumFramesUsed < numTotalFramesInVideo)
             {
-                if ((tier2FramesUsed == numFramesPerTier2Clip) && (tier2Clip != 2))
+                //We need to grab the next frame to show
+                IplImage image = cvlib.CvQueryFrame(ref capture);
+
+                if (totalNumFramesUsed == 0)
+                {
+                    //the first frame we are working on
+                    //We need to grab the first frame before being able to get the width and height
+                    int vidWidth = (int)cvlib.cvGetCaptureProperty(capture, cvlib.CV_CAP_PROP_FRAME_WIDTH);
+                    int vidHeight = (int)cvlib.cvGetCaptureProperty(capture, cvlib.CV_CAP_PROP_FRAME_HEIGHT);
+                    outputVideoSize = new CvSize(vidWidth, vidHeight);
+
+                    tier2VidWriter = cvlib.CvCreateVideoWriter(GetOutputPath(2, (int)tier2Clip), outputFourCC, fps, outputVideoSize, 1);
+                    tier3VidWriter = cvlib.CvCreateVideoWriter(GetOutputPath(3, (int)tier3Clip), outputFourCC, fps, outputVideoSize, 1);
+                    
+                    //Get 4 different DominantColorCalculators, 1 for each clip in Tier 3
+                    dominantColorCalculators.Add(Tier3Clip.Clip1, new DominantColorCalculator(vidHeight, vidWidth));
+                    dominantColorCalculators.Add(Tier3Clip.Clip2, new DominantColorCalculator(vidHeight, vidWidth));
+                    dominantColorCalculators.Add(Tier3Clip.Clip3, new DominantColorCalculator(vidHeight, vidWidth));
+                    dominantColorCalculators.Add(Tier3Clip.Clip4, new DominantColorCalculator(vidHeight, vidWidth));
+                }
+
+                if ((tier2FramesUsed == numFramesPerTier2Clip) && (tier2Clip != Tier2Clip.Clip2))
                 {
                     AppendLogLine("Frames written to tier 2, clip " + tier2Clip + " = " + tier2FramesUsed);
                     tier2Clip++;
                     tier2FramesUsed = 0;
                     cvlib.CvReleaseVideoWriter(ref tier2VidWriter);
-                    tier2VidWriter = cvlib.CvCreateVideoWriter(GetOutputPath(2, tier2Clip), outputFourCC, fps, outputVideoSize, 1);
+                    tier2VidWriter = cvlib.CvCreateVideoWriter(GetOutputPath(2, (int)tier2Clip), outputFourCC, fps, outputVideoSize, 1);
                 }
-                if (tier3FramesUsed == numFramesPerTier3Clip && (tier3Clip != 4))
+                if (tier3FramesUsed == numFramesPerTier3Clip && (tier3Clip != Tier3Clip.Clip4))
                 {
                     AppendLogLine("Frames written to tier 3, clip " + tier3Clip + " = " + tier3FramesUsed);
                     tier3Clip++;
                     tier3FramesUsed = 0;
                     cvlib.CvReleaseVideoWriter(ref tier3VidWriter);
-                    tier3VidWriter = cvlib.CvCreateVideoWriter(GetOutputPath(3, tier3Clip), outputFourCC, fps, outputVideoSize, 1);
+                    tier3VidWriter = cvlib.CvCreateVideoWriter(GetOutputPath(3, (int)tier3Clip), outputFourCC, fps, outputVideoSize, 1);
                 }
-
-                //We need to grab the next frame to show
-                image = cvlib.CvQueryFrame(ref capture);
-
+                
                 cvlib.CvWriteFrame(tier2VidWriter, ref image);
                 cvlib.CvWriteFrame(tier3VidWriter, ref image);
 
@@ -183,19 +194,35 @@ namespace WebVideoLibrary
                 tier2FramesUsed++;
                 tier3FramesUsed++;
 
+                //the image must be flipped to show it on the screen correctly
                 cvlib.CvFlip(ref image, ref image, 0);
+                Bitmap bmpImage = cvlib.ToBitmap(image, false);
 
-                Bitmap btmpImage = cvlib.ToBitmap(image, false);
-                ShowImage(btmpImage);
+                //Add this frame to our dominant color calculations
+                dominantColorCalculators[tier3Clip].AddFrame(bmpImage);
+                ShowImage(bmpImage);
 
                 Application.DoEvents();
             }
 
-            AppendLogLine("Frames written to tier 2, clip " + tier2Clip + " = " + tier2FramesUsed);
-            AppendLogLine("Frames written to tier 3, clip " + tier3Clip + " = " + tier3FramesUsed);
             cvlib.CvReleaseVideoWriter(ref tier3VidWriter);
             cvlib.CvReleaseVideoWriter(ref tier2VidWriter);
             cvlib.CvReleaseCapture(ref capture);
+
+            AppendLogLine("Frames written to tier 2, clip " + (int)tier2Clip + " = " + tier2FramesUsed);
+            AppendLogLine("Frames written to tier 3, clip " + (int)tier3Clip + " = " + tier3FramesUsed);
+
+            AppendLogLine("Dominant Color for Tier3 Clip1: " + dominantColorCalculators[Tier3Clip.Clip1].GetDominantColor().ToString());
+            AppendLogLine("Dominant Color for Tier3 Clip2: " + dominantColorCalculators[Tier3Clip.Clip2].GetDominantColor().ToString());
+            AppendLogLine("Dominant Color for Tier3 Clip3: " + dominantColorCalculators[Tier3Clip.Clip3].GetDominantColor().ToString());
+            AppendLogLine("Dominant Color for Tier3 Clip4: " + dominantColorCalculators[Tier3Clip.Clip4].GetDominantColor().ToString());
+
+            DominantColorCalculator tier2Clip1DomColorCalc = DominantColorCalculator.Add(dominantColorCalculators[Tier3Clip.Clip1], dominantColorCalculators[Tier3Clip.Clip2]);
+            DominantColorCalculator tier2Clip2DomColorCalc = DominantColorCalculator.Add(dominantColorCalculators[Tier3Clip.Clip3], dominantColorCalculators[Tier3Clip.Clip4]);
+            DominantColorCalculator tier1DomColorCalc = DominantColorCalculator.Add(tier2Clip1DomColorCalc, tier2Clip2DomColorCalc);
+            AppendLogLine("Dominant Color for Tier2 Clip1: " + tier2Clip1DomColorCalc.GetDominantColor().ToString());
+            AppendLogLine("Dominant Color for Tier2 Clip2: " + tier2Clip2DomColorCalc.GetDominantColor().ToString());
+            AppendLogLine("Dominant Color for Tier1: " + tier1DomColorCalc.GetDominantColor().ToString());
         }
 
    
