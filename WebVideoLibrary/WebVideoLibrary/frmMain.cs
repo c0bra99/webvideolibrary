@@ -109,6 +109,9 @@ namespace WebVideoLibrary
             //Get some stats about the video
             int numTotalFramesInVideo = (int)cvlib.cvGetCaptureProperty(capture, cvlib.CV_CAP_PROP_FRAME_COUNT);
             lblTotalFrames.Text = "/ " + numTotalFramesInVideo;
+            progressBar1.Maximum = numTotalFramesInVideo;
+            progressBar1.Value = 0; //start out @ position 0
+
             double fps = cvlib.cvGetCaptureProperty(capture, cvlib.CV_CAP_PROP_FPS);
             int fourcc = (int)cvlib.cvGetCaptureProperty(capture, cvlib.CV_CAP_PROP_FOURCC);
             double vidLengthInSeconds = numTotalFramesInVideo / fps;
@@ -207,7 +210,7 @@ namespace WebVideoLibrary
                 ShowImage(bmpImage);
 
                 lblCurrFrame.Text = totalNumFramesUsed.ToString();
-
+                progressBar1.PerformStep();
                 Application.DoEvents();
             }
 
