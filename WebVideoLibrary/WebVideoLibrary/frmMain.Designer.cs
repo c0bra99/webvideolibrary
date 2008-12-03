@@ -31,18 +31,18 @@ namespace WebVideoLibrary
             this.btnStart = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.txtVideoInputPath = new System.Windows.Forms.TextBox();
-            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.btnOpenFile = new System.Windows.Forms.Button();
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.lblTotalFrames = new System.Windows.Forms.Label();
             this.lblCurrFrame = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.cboOutputCodec = new System.Windows.Forms.ComboBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.txtLog = new System.Windows.Forms.TextBox();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -74,10 +74,7 @@ namespace WebVideoLibrary
             this.txtVideoInputPath.Name = "txtVideoInputPath";
             this.txtVideoInputPath.Size = new System.Drawing.Size(142, 20);
             this.txtVideoInputPath.TabIndex = 2;
-            // 
-            // openFileDialog1
-            // 
-            this.openFileDialog1.FileName = "openFileDialog1";
+            this.txtVideoInputPath.Text = "C:\\temp";
             // 
             // btnOpenFile
             // 
@@ -134,6 +131,15 @@ namespace WebVideoLibrary
             this.tabPage1.Text = "Video";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // progressBar1
+            // 
+            this.progressBar1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.progressBar1.Location = new System.Drawing.Point(3, 445);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(596, 23);
+            this.progressBar1.Step = 1;
+            this.progressBar1.TabIndex = 9;
+            // 
             // lblTotalFrames
             // 
             this.lblTotalFrames.AutoSize = true;
@@ -177,7 +183,7 @@ namespace WebVideoLibrary
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(651, 414);
+            this.tabPage2.Size = new System.Drawing.Size(602, 471);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Output Log";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -194,14 +200,10 @@ namespace WebVideoLibrary
             this.txtLog.Size = new System.Drawing.Size(641, 411);
             this.txtLog.TabIndex = 0;
             // 
-            // progressBar1
+            // folderBrowserDialog1
             // 
-            this.progressBar1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.progressBar1.Location = new System.Drawing.Point(3, 445);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(596, 23);
-            this.progressBar1.Step = 1;
-            this.progressBar1.TabIndex = 9;
+            this.folderBrowserDialog1.SelectedPath = "c:\\temp";
+            this.folderBrowserDialog1.ShowNewFolderButton = false;
             // 
             // frmMain
             // 
@@ -227,7 +229,6 @@ namespace WebVideoLibrary
         private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox txtVideoInputPath;
-        private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.Button btnOpenFile;
         private System.Windows.Forms.PictureBox pictureBox;
         private System.Windows.Forms.TabControl tabControl1;
@@ -239,6 +240,7 @@ namespace WebVideoLibrary
         private System.Windows.Forms.Label lblTotalFrames;
         private System.Windows.Forms.Label lblCurrFrame;
         private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
     }
 }
 
