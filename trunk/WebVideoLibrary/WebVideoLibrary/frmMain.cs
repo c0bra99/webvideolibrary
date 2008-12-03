@@ -51,10 +51,6 @@ namespace WebVideoLibrary
         /// </summary>
         private void frmMain_Load(object sender, EventArgs e)
         {
-            openFileDialog1.Filter = "Video files|*.avi;*.divx;*.mpg;*.wmv;*.mp4|All Files|*.*";
-            openFileDialog1.FileName = string.Empty; //initial filename when box pops up = nothing
-            txtVideoInputPath.Text = "c:\\temp\\bouncing_ball.divx";//so we dont have to browse everytime we test
-
             //load the output codec combobox with some predefined FOURCC's
             cboOutputCodec.Items.Add(new ListItem("DivX", cvlib.CvCreateFourCC('D', 'I', 'V', 'X')));
             cboOutputCodec.Items.Add(new ListItem("Uncompressed DIB", cvlib.CvCreateFourCC('D', 'I', 'B', ' ')));
@@ -68,11 +64,11 @@ namespace WebVideoLibrary
         /// </summary>
         private void btnOpenFile_Click(object sender, EventArgs e)
         {
-            DialogResult result = openFileDialog1.ShowDialog();
-
+            //DialogResult result = openFileDialog1.ShowDialog();
+            DialogResult result = folderBrowserDialog1.ShowDialog();
             if (result == DialogResult.OK)
             {
-                txtVideoInputPath.Text = openFileDialog1.FileName;
+                txtVideoInputPath.Text = folderBrowserDialog1.SelectedPath;
             }
         }
 
@@ -83,17 +79,17 @@ namespace WebVideoLibrary
         private void btnStart_Click(object sender, EventArgs e)
         {
             //Check to make sure the file exists.
-            if (!File.Exists(txtVideoInputPath.Text))
+            if (!Directory.Exists(txtVideoInputPath.Text))
             {
-                MessageBox.Show("Files does not exist!");
+                MessageBox.Show("Directory does not exist!");
                 return;
             }
-
+            
             //get the selected output FourCC from the combo box.
             int outputFourCC = (int)((ListItem)cboOutputCodec.SelectedItem).Value;
             
             //we will need this when we actually do every file in a directory instead of just 1 video
-            string[] files = Directory.GetFiles("c:\\temp", "*.*", SearchOption.TopDirectoryOnly); //fild all the files in that path with that pattern
+            string[] files = Directory.GetFiles(txtVideoInputPath.Text, "*.*", SearchOption.TopDirectoryOnly); //fild all the files in that path with that pattern
             foreach (string file in files)
 	        {
                 string videoName = Path.GetFileNameWithoutExtension(file);
@@ -269,11 +265,16 @@ namespace WebVideoLibrary
         /// </summary>
         private string GetOutputPath(int tier, int clip, string videoFilePath)
         {
-            string dir = Path.GetDirectoryName(videoFilePath);
+            string dir = Path.GetDirectoryName(videoFilePath) + "\\output\\";
+            if (!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+            
             string file = Path.GetFileNameWithoutExtension(videoFilePath);
             string extension = ".avi"; //always use .avi, if you use .divx, or .mjpg it doesn't write the frames for some reason.
 
-            return dir + "\\output\\" + file + "-Tier" + tier + "Clip" + clip + extension;
+            return dir  + file + "-Tier" + tier + "Clip" + clip + extension;
         }
 
 
