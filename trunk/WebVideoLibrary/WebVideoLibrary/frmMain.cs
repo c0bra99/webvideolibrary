@@ -185,9 +185,12 @@ namespace WebVideoLibrary
                         dominantColorCalculators.Add(Tier3Clip.Clip4, new DominantColorCalculator(vidHeight, vidWidth));
 
                         tier2Clip = new Clip();
-                        tier3Clip = new Clip();
                         tier2Clip.FilePath = GetOutputPath(2, (int)currentTier2Clip, file);
-                        tier3Clip.Description = 
+                        tier2Clip.Description = GetVideoDescription(videoName, 2, (int)currentTier2Clip);
+                        tier3Clip = new Clip();
+                        tier3Clip.FilePath = GetOutputPath(3, (int)currentTier3Clip, file);
+                        tier3Clip.Description = GetVideoDescription(videoName, 3, (int)currentTier3Clip);
+
                         clips.Add(currentTier2Clip, tier2Clip);
                         clips.Add(currentTier3Clip, tier3Clip);
                     }
@@ -198,7 +201,7 @@ namespace WebVideoLibrary
                         currentTier2Clip++;
                         tier2FramesUsed = 0;
                         cvlib.CvReleaseVideoWriter(ref tier2VidWriter);
-                        tier2VidWriter = cvlib.CvCreateVideoWriter(GetOutputPath(2, (int)currentTier2Clip), outputFourCC, fps, outputVideoSize, 1);
+                        tier2VidWriter = cvlib.CvCreateVideoWriter(GetOutputPath(2, (int)currentTier2Clip, file), outputFourCC, fps, outputVideoSize, 1);
                     }
                     if (tier3FramesUsed == numFramesPerTier3Clip && (currentTier3Clip != Tier3Clip.Clip4))
                     {
@@ -206,7 +209,7 @@ namespace WebVideoLibrary
                         currentTier3Clip++;
                         tier3FramesUsed = 0;
                         cvlib.CvReleaseVideoWriter(ref tier3VidWriter);
-                        tier3VidWriter = cvlib.CvCreateVideoWriter(GetOutputPath(3, (int)currentTier3Clip), outputFourCC, fps, outputVideoSize, 1);
+                        tier3VidWriter = cvlib.CvCreateVideoWriter(GetOutputPath(3, (int)currentTier3Clip, file), outputFourCC, fps, outputVideoSize, 1);
                     }
                     
                     cvlib.CvWriteFrame(tier2VidWriter, ref image);
@@ -272,6 +275,13 @@ namespace WebVideoLibrary
 
             return dir + "\\output\\" + file + "-Tier" + tier + "Clip" + clip + extension;
         }
+
+
+        private string GetVideoDescription(string videoName, int tier, int clip)
+        {
+            return videoName + " Tier " + tier + ", Clip " + clip;
+        }
+
 
         /// <summary>
         /// Returns the FourCC human readable characters
