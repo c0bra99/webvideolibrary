@@ -75,9 +75,12 @@ namespace DataLayer
         /// </summary>
         public static void Save(List<ClipAttribute> attributes)
         {
-            foreach (ClipAttribute attribute in attributes)
+            if (attributes != null)
             {
-                attribute.Save();
+                foreach (ClipAttribute attribute in attributes)
+                {
+                    attribute.Save();
+                }
             }
         }
     }
