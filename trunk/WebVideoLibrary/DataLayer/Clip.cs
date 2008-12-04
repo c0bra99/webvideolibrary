@@ -17,7 +17,9 @@ namespace DataLayer
         public List<ClipAttribute> Attributes { get; set; }
 
         public Clip()
-        { }
+        {
+            ID = -1;
+        }
 
         public Clip(int id, string description, string filepath, Bitmap thumbnail)
         {
@@ -27,6 +29,14 @@ namespace DataLayer
             Thumbnail = thumbnail;
         }
 
+        public void AddAttribute(string name, string value)
+        {
+            if (Attributes == null)
+            {
+                Attributes = new List<ClipAttribute>();
+            }
+            Attributes.Add(new ClipAttribute(-1, this.ID, name, value));
+        }
 
         /// <summary>
         /// Saves this Clip to the DB
@@ -34,14 +44,17 @@ namespace DataLayer
         public void Save()
         {
             //save this Clip to the DB
-            using (SQLiteConnection cnn = new SQLiteConnection(Utility.GetConnectionString()))
+            using (SQLiteConnection cnn = new SQLiteConnection(Utility.CONNECTION_STRING))
             {
                 using (SQLiteCommand cmd = cnn.CreateCommand())
                 {
                     cnn.Open();
                     cmd.CommandText = "INSERT INTO Clips(ID, Description, FilePath, Thumbnail) VALUES(?, ?, ?, ?)";
                     cmd.Parameters.Add("ID", DbType.Int32);
-                    cmd.Parameters["ID"].Value = ID;
+                    if (ID != -1)
+                    {
+                        cmd.Parameters["ID"].Value = ID;
+                    }
                     cmd.Parameters.Add("Description", DbType.String);
                     cmd.Parameters["Description"].Value = Description;
                     cmd.Parameters.Add("FilePath", DbType.String);
@@ -53,6 +66,29 @@ namespace DataLayer
                     if (rowsUpdated != 1)
                     {
                         throw new SQLiteException("Too many or too little rows updated! Expected 1, Updated: " + rowsUpdated);
+                    }
+   
+                }
+                //If it is a new Clip, it wont have an ID, lets update it so we can
+                //put the correct ID on each ClipAttribute
+                if (ID == -1)
+                {
+                    using (SQLiteCommand cmd = cnn.CreateCommand())
+                    {
+                        if (cnn.State != ConnectionState.Open)
+                        {
+                            cnn.Open();
+                        }
+                        cmd.CommandText = "SELECT last_insert_rowid();";
+                        ID = (int)(long)cmd.ExecuteScalar();
+
+                        if (Attributes != null)
+                        {
+                            foreach (ClipAttribute attribute in Attributes)
+                            {
+                                attribute.ClipID = ID;
+                            }
+                        }
                     }
                 }
             }

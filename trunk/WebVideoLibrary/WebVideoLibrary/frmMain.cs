@@ -56,6 +56,17 @@ namespace WebVideoLibrary
             cboOutputCodec.Items.Add(new ListItem("Uncompressed DIB", cvlib.CvCreateFourCC('D', 'I', 'B', ' ')));
             cboOutputCodec.Items.Add(new ListItem("Motion JPG", cvlib.CvCreateFourCC('M', 'J', 'P', 'G')));
             cboOutputCodec.SelectedIndex = 0;
+
+            if (!File.Exists(Utility.DATABASE_FILENAME_AND_PATH))
+            {
+                //If the database does not exist where we think it should, lets copy it there.
+                if (!File.Exists(Utility.DATABASE_FILENAME))
+                {
+                    MessageBox.Show("Could not find DataBase file: " + Utility.DATABASE_FILENAME);
+                    return;
+                }
+                File.Copy(Utility.DATABASE_FILENAME, Utility.DATABASE_FILENAME_AND_PATH);
+            }
         }
 
 
@@ -173,7 +184,7 @@ namespace WebVideoLibrary
 
                         tier2VidWriter = cvlib.CvCreateVideoWriter(GetOutputPath(2, (int)currentTier2Clip, file), outputFourCC, fps, outputVideoSize, 1);
                         tier3VidWriter = cvlib.CvCreateVideoWriter(GetOutputPath(3, (int)currentTier3Clip, file), outputFourCC, fps, outputVideoSize, 1);
-                        
+
                         //Get 4 different DominantColorCalculators, 1 for each clip in Tier 3
                         dominantColorCalculators.Add(Tier3Clip.Clip1, new DominantColorCalculator(vidHeight, vidWidth));
                         dominantColorCalculators.Add(Tier3Clip.Clip2, new DominantColorCalculator(vidHeight, vidWidth));
@@ -190,24 +201,37 @@ namespace WebVideoLibrary
                         clips.Add(currentTier2Clip, tier2Clip);
                         clips.Add(currentTier3Clip, tier3Clip);
                     }
+                    else
+                    {
+                        if ((tier2FramesUsed == numFramesPerTier2Clip) && (currentTier2Clip != Tier2Clip.Clip2))
+                        {
+                            ((Clip)clips[currentTier2Clip]).AddAttribute("Frames", tier2FramesUsed.ToString());
 
-                    if ((tier2FramesUsed == numFramesPerTier2Clip) && (currentTier2Clip != Tier2Clip.Clip2))
-                    {
-                        AppendLogLine("Frames written to tier 2, clip " + currentTier2Clip + " = " + tier2FramesUsed);
-                        currentTier2Clip++;
-                        tier2FramesUsed = 0;
-                        cvlib.CvReleaseVideoWriter(ref tier2VidWriter);
-                        tier2VidWriter = cvlib.CvCreateVideoWriter(GetOutputPath(2, (int)currentTier2Clip, file), outputFourCC, fps, outputVideoSize, 1);
+                            AppendLogLine("Frames written to tier 2, clip " + currentTier2Clip + " = " + tier2FramesUsed);
+                            currentTier2Clip++;
+                            tier2FramesUsed = 0;
+                            cvlib.CvReleaseVideoWriter(ref tier2VidWriter);
+                            tier2VidWriter = cvlib.CvCreateVideoWriter(GetOutputPath(2, (int)currentTier2Clip, file), outputFourCC, fps, outputVideoSize, 1);
+                            tier2Clip = new Clip();
+                            tier2Clip.FilePath = GetOutputPath(2, (int)currentTier2Clip, file);
+                            tier2Clip.Description = GetVideoDescription(videoName, 2, (int)currentTier2Clip);
+                            clips.Add(currentTier2Clip, tier2Clip);
+                        }
+                        if (tier3FramesUsed == numFramesPerTier3Clip && (currentTier3Clip != Tier3Clip.Clip4))
+                        {
+                            AppendLogLine("Frames written to tier 3, clip " + currentTier3Clip + " = " + tier3FramesUsed);
+                            ((Clip)clips[currentTier3Clip]).AddAttribute("Frames", tier3FramesUsed.ToString());
+                            currentTier3Clip++;
+                            tier3FramesUsed = 0;
+                            cvlib.CvReleaseVideoWriter(ref tier3VidWriter);
+                            tier3VidWriter = cvlib.CvCreateVideoWriter(GetOutputPath(3, (int)currentTier3Clip, file), outputFourCC, fps, outputVideoSize, 1);
+                            tier3Clip = new Clip();
+                            tier3Clip.FilePath = GetOutputPath(3, (int)currentTier3Clip, file);
+                            tier3Clip.Description = GetVideoDescription(videoName, 3, (int)currentTier3Clip);
+                            clips.Add(currentTier3Clip, tier3Clip);
+                        }
                     }
-                    if (tier3FramesUsed == numFramesPerTier3Clip && (currentTier3Clip != Tier3Clip.Clip4))
-                    {
-                        AppendLogLine("Frames written to tier 3, clip " + currentTier3Clip + " = " + tier3FramesUsed);
-                        currentTier3Clip++;
-                        tier3FramesUsed = 0;
-                        cvlib.CvReleaseVideoWriter(ref tier3VidWriter);
-                        tier3VidWriter = cvlib.CvCreateVideoWriter(GetOutputPath(3, (int)currentTier3Clip, file), outputFourCC, fps, outputVideoSize, 1);
-                    }
-                    
+
                     cvlib.CvWriteFrame(tier2VidWriter, ref image);
                     cvlib.CvWriteFrame(tier3VidWriter, ref image);
 
@@ -235,7 +259,12 @@ namespace WebVideoLibrary
 
                 AppendLogLine("Frames written to tier 2, clip " + (int)currentTier2Clip + " = " + tier2FramesUsed);
                 AppendLogLine("Frames written to tier 3, clip " + (int)currentTier3Clip + " = " + tier3FramesUsed);
-
+                ((Clip)clips[currentTier2Clip]).AddAttribute("Frames", tier2FramesUsed.ToString());
+                ((Clip)clips[currentTier3Clip]).AddAttribute("Frames", tier3FramesUsed.ToString());
+                foreach (Clip clip in clips.Values)
+                {
+                    clip.Save();
+                }
                 AppendLogLine("Dominant Color for Tier3 Clip1: " + dominantColorCalculators[Tier3Clip.Clip1].GetDominantColor().ToString());
                 AppendLogLine("Dominant Color for Tier3 Clip2: " + dominantColorCalculators[Tier3Clip.Clip2].GetDominantColor().ToString());
                 AppendLogLine("Dominant Color for Tier3 Clip3: " + dominantColorCalculators[Tier3Clip.Clip3].GetDominantColor().ToString());
