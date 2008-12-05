@@ -5,6 +5,7 @@ using System.Text;
 using System.Drawing;
 using System.Data;
 using System.Data.SQLite;
+using System.IO;
 
 namespace DataLayer
 {
@@ -60,8 +61,12 @@ namespace DataLayer
                     cmd.Parameters.Add("FilePath", DbType.String);
                     cmd.Parameters["FilePath"].Value = FilePath;
                     cmd.Parameters.Add("Thumbnail", DbType.Object);
-                    cmd.Parameters["Thumbnail"].Value = Thumbnail;
-
+                    if (Thumbnail != null)
+                    {
+                        MemoryStream ms = new MemoryStream();
+                        Thumbnail.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg); //format the thumbnail as a jpg image
+                        cmd.Parameters["Thumbnail"].Value = ms.ToArray();
+                    }
                     int rowsUpdated = cmd.ExecuteNonQuery();
                     if (rowsUpdated != 1)
                     {
@@ -95,6 +100,45 @@ namespace DataLayer
 
             //save each ClipAttribute to the DB
             ClipAttribute.Save(Attributes);
+        }
+
+
+        public static List<Clip> GetAll()
+        {
+            List<Clip> clips = new List<Clip>();
+
+            using (SQLiteConnection cnn = new SQLiteConnection(Utility.CONNECTION_STRING))
+            {
+                using (SQLiteCommand cmd = cnn.CreateCommand())
+                {
+                    cnn.Open();
+                    cmd.CommandText = "SELECT * FROM Clips";
+                    using (SQLiteDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.HasRows)
+                        {
+                            while (reader.Read())
+                            {
+                                Clip clip = new Clip();
+
+                                clip.ID = (int)(long)reader["ID"];
+                                clip.Description = (string)reader["Description"];
+                                clip.FilePath = (string)reader["FilePath"];
+                                if (!(reader["Thumbnail"] is DBNull))
+                                {
+                                    byte[] imagesBytes = (byte[])reader["Thumbnail"];
+                                    MemoryStream ms = new MemoryStream(imagesBytes);
+                                    clip.Thumbnail = new Bitmap(ms);
+                                }
+
+                                clips.Add(clip);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return clips;
         }
     }
 }
