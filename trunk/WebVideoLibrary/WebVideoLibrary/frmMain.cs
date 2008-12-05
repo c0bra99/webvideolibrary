@@ -244,6 +244,16 @@ namespace WebVideoLibrary
                     cvlib.CvFlip(ref image, ref image, 0);
                     Bitmap bmpImage = cvlib.ToBitmap(image, false);
 
+                    //Set our thumbnails = to the frame in the center of each clip
+                    if (tier2FramesUsed == numFramesPerTier2Clip / 2)
+                    {
+                        tier3Clip.Thumbnail = bmpImage;
+                    }
+                    if (tier3FramesUsed == numFramesPerTier3Clip / 2)
+                    {
+                        tier3Clip.Thumbnail = bmpImage;
+                    }
+
                     //Add this frame to our dominant color calculations
                     dominantColorCalculators[currentTier3Clip].AddFrame(bmpImage);
                     ShowImage(bmpImage);
