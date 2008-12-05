@@ -63,9 +63,11 @@ namespace DataLayer
                     cmd.Parameters.Add("Thumbnail", DbType.Object);
                     if (Thumbnail != null)
                     {
-                        MemoryStream ms = new MemoryStream();
-                        Thumbnail.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg); //format the thumbnail as a jpg image
-                        cmd.Parameters["Thumbnail"].Value = ms.ToArray();
+                        using (MemoryStream ms = new MemoryStream())
+                        {
+                            Thumbnail.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg); //format the thumbnail as a jpg image
+                            cmd.Parameters["Thumbnail"].Value = ms.ToArray();
+                        }
                     }
                     int rowsUpdated = cmd.ExecuteNonQuery();
                     if (rowsUpdated != 1)
