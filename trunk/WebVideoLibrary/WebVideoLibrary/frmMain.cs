@@ -13,6 +13,7 @@ using System.IO;
 using openCV;
 using System.Collections;
 using DataLayer;
+using System.Runtime.InteropServices;
 
 namespace WebVideoLibrary
 {
@@ -256,11 +257,13 @@ namespace WebVideoLibrary
 
                     //Add this frame to our dominant color calculations
                     dominantColorCalculators[currentTier3Clip].AddFrame(bmpImage);
-                    ShowImage(bmpImage);
+                    //ShowImage(bmpImage);
 
                     lblCurrFrame.Text = totalNumFramesUsed.ToString();
                     progressBar1.PerformStep();
                     Application.DoEvents();
+
+                    GoodFeaturesToTrack(image);
                 }
 
                 cvlib.CvReleaseVideoWriter(ref tier3VidWriter);
@@ -337,6 +340,44 @@ namespace WebVideoLibrary
             return new string(chars);
         }
 
+        public void GoodFeaturesToTrack(IplImage image)
+        {
+            int corner_count = 10;
+            CvSize size = new CvSize(image.width, image.height);
+            IplImage gray, eig_image, tmp_image;
+
+            if (image.imageData == IntPtr.Zero) return;
+
+            /// in case of image is not 1 channel
+            if (image.nChannels != 1)
+            {
+                /// create gray scale image
+                gray = cvlib.CvCreateImage(size, (int)cvlib.IPL_DEPTH_8U, 1);
+                /// do color conversion
+                if (gray.imageData != IntPtr.Zero) cvlib.CvCvtColor(ref image, ref gray, cvlib.CV_BGR2GRAY);
+                else return;
+            }
+            else /// or simply make a clone
+                gray = cvlib.CvCloneImage(ref image);
+
+            eig_image = cvlib.CvCreateImage(new CvSize(image.width, image.height), (int)cvlib.IPL_DEPTH_32F, 1);
+            tmp_image = cvlib.CvCreateImage(new CvSize(image.width, image.height), (int)cvlib.IPL_DEPTH_32F, 1);
+            CvPoint2D32f[] pts = new CvPoint2D32f[corner_count];
+            GCHandle h;
+            cvlib.CvGoodFeaturesToTrack(ref gray, ref eig_image, ref tmp_image, cvtools.Convert1DArrToPtr(pts, out h),
+                        ref corner_count, 0.01, 1, IntPtr.Zero, 3, 1, 0.04);
+            foreach (CvPoint2D32f p in pts)
+            {
+                cvlib.CvCircle(ref image, new CvPoint((int)p.x, (int)p.y), 2, new CvScalar(0, 255, 0, 0), 2, 8, 0);
+            }
+            Bitmap goodfeat = cvlib.ToBitmap(image, false);
+            ShowImage(goodfeat);
+            //SetCurrentImage("Features", image, true);
+            cvlib.CvReleaseImage(ref eig_image);
+            cvlib.CvReleaseImage(ref tmp_image);
+            cvlib.CvReleaseImage(ref gray);
+            cvtools.ReleaseHandel(h);
+        }
 
         /// <summary>
         /// Shows the image in the picturebox on the form
