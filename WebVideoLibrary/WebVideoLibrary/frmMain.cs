@@ -19,13 +19,18 @@ namespace WebVideoLibrary
 {
     public partial class frmMain : Form
     {
+        private enum Tier1Clip
+        {
+            OnlyClip = 1
+        }
+
         /// <summary>
         /// An enumeration for each clip in Tier 2
         /// </summary>
         private enum Tier2Clip
         {
             Clip1 = 1,
-            Clip2 = 2,
+            Clip2 = 2
         }
 
 
@@ -191,6 +196,10 @@ namespace WebVideoLibrary
                         dominantColorCalculators.Add(Tier3Clip.Clip2, new DominantColorCalculator(vidHeight, vidWidth));
                         dominantColorCalculators.Add(Tier3Clip.Clip3, new DominantColorCalculator(vidHeight, vidWidth));
                         dominantColorCalculators.Add(Tier3Clip.Clip4, new DominantColorCalculator(vidHeight, vidWidth));
+                        Clip tier1Clip = new Clip();
+                        tier1Clip.Description = GetVideoDescription(videoName, 1, 1);
+                        tier1Clip.FilePath = file;
+                        clips.Add(Tier1Clip.OnlyClip, tier1Clip);
 
                         tier2Clip = new Clip();
                         tier2Clip.FilePath = GetOutputPath(2, (int)currentTier2Clip, file);
@@ -248,11 +257,15 @@ namespace WebVideoLibrary
                     //Set our thumbnails = to the frame in the center of each clip
                     if (tier2FramesUsed == numFramesPerTier2Clip / 2)
                     {
-                        tier3Clip.Thumbnail = bmpImage;
+                        tier2Clip.Thumbnail = (Bitmap)bmpImage.Clone();
                     }
                     if (tier3FramesUsed == numFramesPerTier3Clip / 2)
                     {
-                        tier3Clip.Thumbnail = bmpImage;
+                        tier3Clip.Thumbnail = (Bitmap)bmpImage.Clone();
+                    }
+                    if (totalNumFramesUsed == numTotalFramesInVideo / 2)
+                    {
+                        ((Clip)clips[Tier1Clip.OnlyClip]).Thumbnail = (Bitmap)bmpImage.Clone();
                     }
 
                     //Add this frame to our dominant color calculations
@@ -274,24 +287,45 @@ namespace WebVideoLibrary
                 AppendLogLine("Frames written to tier 3, clip " + (int)currentTier3Clip + " = " + tier3FramesUsed);
                 ((Clip)clips[currentTier2Clip]).AddAttribute("Frames", tier2FramesUsed.ToString());
                 ((Clip)clips[currentTier3Clip]).AddAttribute("Frames", tier3FramesUsed.ToString());
+
+                AddDominantColorAttributesToClips(clips, dominantColorCalculators);
                 foreach (Clip clip in clips.Values)
                 {
                     clip.Save();
                 }
-                AppendLogLine("Dominant Color for Tier3 Clip1: " + dominantColorCalculators[Tier3Clip.Clip1].GetDominantColor().ToString());
-                AppendLogLine("Dominant Color for Tier3 Clip2: " + dominantColorCalculators[Tier3Clip.Clip2].GetDominantColor().ToString());
-                AppendLogLine("Dominant Color for Tier3 Clip3: " + dominantColorCalculators[Tier3Clip.Clip3].GetDominantColor().ToString());
-                AppendLogLine("Dominant Color for Tier3 Clip4: " + dominantColorCalculators[Tier3Clip.Clip4].GetDominantColor().ToString());
-
-                DominantColorCalculator tier2Clip1DomColorCalc = DominantColorCalculator.Add(dominantColorCalculators[Tier3Clip.Clip1], dominantColorCalculators[Tier3Clip.Clip2]);
-                DominantColorCalculator tier2Clip2DomColorCalc = DominantColorCalculator.Add(dominantColorCalculators[Tier3Clip.Clip3], dominantColorCalculators[Tier3Clip.Clip4]);
-                DominantColorCalculator tier1DomColorCalc = DominantColorCalculator.Add(tier2Clip1DomColorCalc, tier2Clip2DomColorCalc);
-                AppendLogLine("Dominant Color for Tier2 Clip1: " + tier2Clip1DomColorCalc.GetDominantColor().ToString());
-                AppendLogLine("Dominant Color for Tier2 Clip2: " + tier2Clip2DomColorCalc.GetDominantColor().ToString());
-                AppendLogLine("Dominant Color for Tier1: " + tier1DomColorCalc.GetDominantColor().ToString());
             }
         }
 
+
+        private void AddDominantColorAttributesToClips(Hashtable clips, Dictionary<Tier3Clip, DominantColorCalculator> dominantColorCalculators)
+        {
+            DominantColorCalculator tier2Clip1DomColorCalc = DominantColorCalculator.Add(dominantColorCalculators[Tier3Clip.Clip1], dominantColorCalculators[Tier3Clip.Clip2]);
+            DominantColorCalculator tier2Clip2DomColorCalc = DominantColorCalculator.Add(dominantColorCalculators[Tier3Clip.Clip3], dominantColorCalculators[Tier3Clip.Clip4]);
+            DominantColorCalculator tier1DomColorCalc = DominantColorCalculator.Add(tier2Clip1DomColorCalc, tier2Clip2DomColorCalc);
+
+            string tier1DomColor = tier1DomColorCalc.GetDominantColor().ToString();
+            string tier2Clip1DomColor = tier2Clip1DomColorCalc.GetDominantColor().ToString();
+            string tier2Clip2DomColor = tier2Clip2DomColorCalc.GetDominantColor().ToString();
+            string tier3Clip1DomColor = dominantColorCalculators[Tier3Clip.Clip1].GetDominantColor().ToString();
+            string tier3Clip2DomColor = dominantColorCalculators[Tier3Clip.Clip2].GetDominantColor().ToString();
+            string tier3Clip3DomColor = dominantColorCalculators[Tier3Clip.Clip3].GetDominantColor().ToString();
+            string tier3Clip4DomColor = dominantColorCalculators[Tier3Clip.Clip4].GetDominantColor().ToString();
+
+            AppendLogLine("Dominant Color for Tier1: " + tier1DomColor);
+            AppendLogLine("Dominant Color for Tier2 Clip1: " + tier2Clip1DomColor);
+            AppendLogLine("Dominant Color for Tier2 Clip2: " + tier2Clip2DomColor);
+            AppendLogLine("Dominant Color for Tier3 Clip1: " + tier3Clip1DomColor);
+            AppendLogLine("Dominant Color for Tier3 Clip2: " + tier3Clip2DomColor);
+            AppendLogLine("Dominant Color for Tier3 Clip3: " + tier3Clip3DomColor);
+            AppendLogLine("Dominant Color for Tier3 Clip4: " + tier3Clip4DomColor);
+
+            ((Clip)clips[Tier1Clip.OnlyClip]).AddAttribute("Dominant Color", tier1DomColor);
+            ((Clip)clips[Tier2Clip.Clip1]).AddAttribute("Dominant Color", tier2Clip2DomColor);
+            ((Clip)clips[Tier3Clip.Clip1]).AddAttribute("Dominant Color", tier3Clip1DomColor);
+            ((Clip)clips[Tier3Clip.Clip2]).AddAttribute("Dominant Color", tier3Clip2DomColor);
+            ((Clip)clips[Tier3Clip.Clip3]).AddAttribute("Dominant Color", tier3Clip3DomColor);
+            ((Clip)clips[Tier3Clip.Clip4]).AddAttribute("Dominant Color", tier3Clip4DomColor);
+        }
    
         /// <summary>
         /// Appends the text passed in with a new line character and places it in the log textbox.
@@ -320,6 +354,9 @@ namespace WebVideoLibrary
         }
 
 
+        /// <summary>
+        /// Gets the description that we will call this video in the Database
+        /// </summary>
         private string GetVideoDescription(string videoName, int tier, int clip)
         {
             return videoName + " Tier " + tier + ", Clip " + clip;
@@ -342,7 +379,7 @@ namespace WebVideoLibrary
 
         public void GoodFeaturesToTrack(IplImage image)
         {
-            int corner_count = 10;
+            int corner_count = 6;
             CvSize size = new CvSize(image.width, image.height);
             IplImage gray, eig_image, tmp_image;
 
@@ -390,7 +427,6 @@ namespace WebVideoLibrary
                 pictureBox.Image.Dispose();
             }
             pictureBox.Image = image;
-
 
             //make sure the form is big enough to show the complete image.
             if (pictureBox.Height < image.Height)
