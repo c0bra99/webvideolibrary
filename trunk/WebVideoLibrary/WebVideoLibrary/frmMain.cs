@@ -102,7 +102,7 @@ namespace WebVideoLibrary
             int outputFourCC = (int)((ListItem)cboOutputCodec.SelectedItem).Value;
             
             //we will need this when we actually do every file in a directory instead of just 1 video
-            string[] files = Directory.GetFiles(txtVideoInputPath.Text, "*.*", SearchOption.TopDirectoryOnly); //fild all the files in that path with that pattern
+            string[] files = Directory.GetFiles(txtVideoInputPath.Text, "*.*", SearchOption.TopDirectoryOnly); //find all the files in the folder
             foreach (string file in files)
 	        {
                 string videoName = Path.GetFileNameWithoutExtension(file);
@@ -113,8 +113,8 @@ namespace WebVideoLibrary
                 //check to make sure it opened ok
                 if (capture.ptr == IntPtr.Zero)
                 {
-                    MessageBox.Show("Creation of File Capture failed. Check to make sure the correct codec is installed.");
-                    return;
+                    MessageBox.Show("Creation of File Capture failed for file: " + file + " Check to make sure the correct codec is installed. Continuing to next file.");
+                    continue;
                 }
 
                 lblCurrFrame.Visible = true;
@@ -304,11 +304,13 @@ namespace WebVideoLibrary
                 }
             }
 
-            pictureBox.Image.Dispose();
             MessageBox.Show("Done!");
         }
 
 
+        /// <summary>
+        /// Adds the Dominant Color attribute to each of the clips
+        /// </summary>
         private void AddDominantColorAttributesToClips(Hashtable clips, Dictionary<Tier3Clip, DominantColorCalculator> dominantColorCalculators)
         {
             DominantColorCalculator tier2Clip1DomColorCalc = DominantColorCalculator.Add(dominantColorCalculators[Tier3Clip.Clip1], dominantColorCalculators[Tier3Clip.Clip2]);
@@ -340,6 +342,7 @@ namespace WebVideoLibrary
             ((Clip)clips[Tier3Clip.Clip4]).AddAttribute("Dominant Color", tier3Clip4DomColor);
         }
    
+
         /// <summary>
         /// Appends the text passed in with a new line character and places it in the log textbox.
         /// </summary>
