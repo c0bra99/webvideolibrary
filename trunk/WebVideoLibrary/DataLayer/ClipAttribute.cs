@@ -83,5 +83,49 @@ namespace DataLayer
                 }
             }
         }
+
+
+        /// <summary>
+        /// Gets a single clip from the database using the ClipID passed in
+        /// </summary>
+        public static List<ClipAttribute> GetAttributesForClip(int clipID)
+        {
+            List<ClipAttribute> attributes = new List<ClipAttribute>();
+
+            using (SQLiteConnection cnn = new SQLiteConnection(Utility.CONNECTION_STRING))
+            {
+                using (SQLiteCommand cmd = cnn.CreateCommand())
+                {
+                    cnn.Open();
+                    cmd.CommandText = "SELECT * FROM ClipAttributes WHERE ClipID = " + clipID;
+
+                    using (SQLiteDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.HasRows)
+                        {
+                            while (reader.Read())
+                            {
+                                attributes.Add(GetClipAttributeFromDataReader(reader));
+                            }
+                        }
+                    }
+                }
+            }
+
+            return attributes;
+        }
+
+
+        private static ClipAttribute GetClipAttributeFromDataReader(SQLiteDataReader reader)
+        {
+            ClipAttribute attribute = new ClipAttribute();
+            
+            attribute.ID = (int)(long)reader["ID"];
+            attribute.Name = (string)reader["Name"];
+            attribute.Value = (string)reader["Value"];
+            attribute.ClipID = (int)(long)reader["ClipID"];
+
+            return attribute;
+        }
     }
 }

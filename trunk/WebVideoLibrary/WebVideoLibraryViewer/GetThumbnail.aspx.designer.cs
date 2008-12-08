@@ -11,7 +11,7 @@
 namespace WebVideoLibraryViewer {
     
     
-    public partial class _Default {
+    public partial class GetThumbnail {
         
         /// <summary>
         /// form1 control.
@@ -21,14 +21,5 @@ namespace WebVideoLibraryViewer {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
-        
-        /// <summary>
-        /// treeView control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TreeView treeView;
     }
 }
