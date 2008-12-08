@@ -62,17 +62,6 @@ namespace WebVideoLibrary
             cboOutputCodec.Items.Add(new ListItem("Uncompressed DIB", cvlib.CvCreateFourCC('D', 'I', 'B', ' ')));
             cboOutputCodec.Items.Add(new ListItem("Motion JPG", cvlib.CvCreateFourCC('M', 'J', 'P', 'G')));
             cboOutputCodec.SelectedIndex = 0;
-
-            if (!File.Exists(Utility.DATABASE_FILENAME_AND_PATH))
-            {
-                //If the database does not exist where we think it should, lets copy it there.
-                if (!File.Exists(Utility.DATABASE_FILENAME))
-                {
-                    MessageBox.Show("Could not find DataBase file: " + Utility.DATABASE_FILENAME);
-                    return;
-                }
-                File.Copy(Utility.DATABASE_FILENAME, Utility.DATABASE_FILENAME_AND_PATH);
-            }
         }
 
 
@@ -101,7 +90,14 @@ namespace WebVideoLibrary
                 MessageBox.Show("Directory does not exist!");
                 return;
             }
-            
+
+            //If the database already exists, lets delete it so we dont get any duplicate info in the database.
+            if (File.Exists(Utility.DATABASE_FILENAME_AND_PATH))
+            {
+                File.Delete(Utility.DATABASE_FILENAME_AND_PATH);
+            }
+            File.Copy(Utility.DATABASE_FILENAME, Utility.DATABASE_FILENAME_AND_PATH);
+
             //get the selected output FourCC from the combo box.
             int outputFourCC = (int)((ListItem)cboOutputCodec.SelectedItem).Value;
             
@@ -416,17 +412,21 @@ namespace WebVideoLibrary
             GCHandle h;
             cvlib.CvGoodFeaturesToTrack(ref gray, ref eig_image, ref tmp_image, cvtools.Convert1DArrToPtr(pts, out h), ref corner_count, 0.01, 1, IntPtr.Zero, 3, 1, 0.04);
 
-
             StringBuilder sb = new StringBuilder("{");
-            foreach (CvPoint2D32f p in pts)
+            for (int i = 0; i < pts.Length; i++)
             {
-                sb.Append("(");
-                sb.Append(p.x);
+                sb.Append(" (");
+                sb.Append(pts[i].x);
                 sb.Append(",");
-                sb.Append(p.y);
+                sb.Append(pts[i].y);
                 sb.Append(")");
+                if (i != pts.Length - 1)
+                {
+                    sb.Append(", ");
+                }
             }
-            sb.Append('}');
+            
+            sb.Append(" }");
 
             clip.AddAttribute("Good Feature Points", sb.ToString());
 
