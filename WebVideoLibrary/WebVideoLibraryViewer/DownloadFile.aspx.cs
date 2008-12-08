@@ -20,10 +20,10 @@ namespace WebVideoLibraryViewer
         /// </summary>
         protected void Page_Load(object sender, EventArgs e)
         {
-            string filename = "C:\\test.bmp";
+            string filename = Server.UrlDecode(Request.QueryString["FileName"]);
             
             //Get the filename to show the user from the querystring
-            string filenametoshow = Request.QueryString["filename"].ToString();
+            string filenametoshow = Path.GetFileName(filename).Replace(" ", "_");
             if (filenametoshow == string.Empty)
             {
                 filenametoshow = "NoFileName.txt";
@@ -33,7 +33,7 @@ namespace WebVideoLibraryViewer
             this.Response.ContentType = "application/octet-stream";
             
             //Set the filename to show the user
-            this.Response.AddHeader("Content-Disposition", "attachment; filename=" + filenametoshow.Replace(" ", "_"));
+            this.Response.AddHeader("Content-Disposition", "attachment; filename=" + filenametoshow);
 
             try
             {

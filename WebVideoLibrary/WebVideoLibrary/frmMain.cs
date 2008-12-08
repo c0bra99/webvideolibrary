@@ -197,18 +197,25 @@ namespace WebVideoLibrary
                         dominantColorCalculators.Add(Tier3Clip.Clip3, new DominantColorCalculator(vidHeight, vidWidth));
                         dominantColorCalculators.Add(Tier3Clip.Clip4, new DominantColorCalculator(vidHeight, vidWidth));
                         Clip tier1Clip = new Clip();
-                        tier1Clip.Description = GetVideoDescription(videoName, 1, 1);
+                        tier1Clip.Description = videoName;
                         tier1Clip.FilePath = file;
+                        tier1Clip.Tier = 1;
+                        tier1Clip.ClipNumber = 1;
+                        tier1Clip.AddAttribute("Frames", numTotalFramesInVideo.ToString());
                         clips.Add(Tier1Clip.OnlyClip, tier1Clip);
 
                         tier2Clip = new Clip();
+                        tier2Clip.Description = videoName;
                         tier2Clip.FilePath = GetOutputPath(2, (int)currentTier2Clip, file);
-                        tier2Clip.Description = GetVideoDescription(videoName, 2, (int)currentTier2Clip);
-                        tier3Clip = new Clip();
-                        tier3Clip.FilePath = GetOutputPath(3, (int)currentTier3Clip, file);
-                        tier3Clip.Description = GetVideoDescription(videoName, 3, (int)currentTier3Clip);
-
+                        tier2Clip.Tier = 2;
+                        tier2Clip.ClipNumber = 1;
                         clips.Add(currentTier2Clip, tier2Clip);
+
+                        tier3Clip = new Clip();
+                        tier3Clip.Description = videoName;
+                        tier3Clip.FilePath = GetOutputPath(3, (int)currentTier3Clip, file);
+                        tier3Clip.Tier = 3;
+                        tier3Clip.ClipNumber = 1;
                         clips.Add(currentTier3Clip, tier3Clip);
                     }
                     else
@@ -224,7 +231,9 @@ namespace WebVideoLibrary
                             tier2VidWriter = cvlib.CvCreateVideoWriter(GetOutputPath(2, (int)currentTier2Clip, file), outputFourCC, fps, outputVideoSize, 1);
                             tier2Clip = new Clip();
                             tier2Clip.FilePath = GetOutputPath(2, (int)currentTier2Clip, file);
-                            tier2Clip.Description = GetVideoDescription(videoName, 2, (int)currentTier2Clip);
+                            tier2Clip.Description = videoName;
+                            tier2Clip.Tier = 2;
+                            tier2Clip.ClipNumber = (int)currentTier2Clip;
                             clips.Add(currentTier2Clip, tier2Clip);
                         }
                         if (tier3FramesUsed == numFramesPerTier3Clip && (currentTier3Clip != Tier3Clip.Clip4))
@@ -237,7 +246,9 @@ namespace WebVideoLibrary
                             tier3VidWriter = cvlib.CvCreateVideoWriter(GetOutputPath(3, (int)currentTier3Clip, file), outputFourCC, fps, outputVideoSize, 1);
                             tier3Clip = new Clip();
                             tier3Clip.FilePath = GetOutputPath(3, (int)currentTier3Clip, file);
-                            tier3Clip.Description = GetVideoDescription(videoName, 3, (int)currentTier3Clip);
+                            tier3Clip.Description = videoName;
+                            tier3Clip.Tier = 3;
+                            tier3Clip.ClipNumber = (int)currentTier3Clip;
                             clips.Add(currentTier3Clip, tier3Clip);
                         }
                     }
@@ -294,6 +305,9 @@ namespace WebVideoLibrary
                     clip.Save();
                 }
             }
+
+            pictureBox.Image.Dispose();
+            MessageBox.Show("Done!");
         }
 
 
@@ -320,7 +334,8 @@ namespace WebVideoLibrary
             AppendLogLine("Dominant Color for Tier3 Clip4: " + tier3Clip4DomColor);
 
             ((Clip)clips[Tier1Clip.OnlyClip]).AddAttribute("Dominant Color", tier1DomColor);
-            ((Clip)clips[Tier2Clip.Clip1]).AddAttribute("Dominant Color", tier2Clip2DomColor);
+            ((Clip)clips[Tier2Clip.Clip1]).AddAttribute("Dominant Color", tier2Clip1DomColor);
+            ((Clip)clips[Tier2Clip.Clip2]).AddAttribute("Dominant Color", tier2Clip2DomColor);
             ((Clip)clips[Tier3Clip.Clip1]).AddAttribute("Dominant Color", tier3Clip1DomColor);
             ((Clip)clips[Tier3Clip.Clip2]).AddAttribute("Dominant Color", tier3Clip2DomColor);
             ((Clip)clips[Tier3Clip.Clip3]).AddAttribute("Dominant Color", tier3Clip3DomColor);
@@ -355,15 +370,6 @@ namespace WebVideoLibrary
 
 
         /// <summary>
-        /// Gets the description that we will call this video in the Database
-        /// </summary>
-        private string GetVideoDescription(string videoName, int tier, int clip)
-        {
-            return videoName + " Tier " + tier + ", Clip " + clip;
-        }
-
-
-        /// <summary>
         /// Returns the FourCC human readable characters
         /// </summary>
         private static string FromFourCC(int fourCC)
@@ -377,44 +383,47 @@ namespace WebVideoLibrary
             return new string(chars);
         }
 
+
         public void GoodFeaturesToTrack(IplImage image)
         {
             int corner_count = 6;
             CvSize size = new CvSize(image.width, image.height);
             IplImage gray, eig_image, tmp_image;
 
-            if (image.imageData == IntPtr.Zero) return;
+            if (image.imageData == IntPtr.Zero)
+            {
+                return;
+            }
 
-            /// in case of image is not 1 channel
+            // in case of image is not 1 channel
             if (image.nChannels != 1)
             {
-                /// create gray scale image
+                // create gray scale image
                 gray = cvlib.CvCreateImage(size, (int)cvlib.IPL_DEPTH_8U, 1);
-                /// do color conversion
+                // do color conversion
                 if (gray.imageData != IntPtr.Zero) cvlib.CvCvtColor(ref image, ref gray, cvlib.CV_BGR2GRAY);
                 else return;
             }
-            else /// or simply make a clone
+            else //or simply make a clone
+            {
                 gray = cvlib.CvCloneImage(ref image);
-
+            }
             eig_image = cvlib.CvCreateImage(new CvSize(image.width, image.height), (int)cvlib.IPL_DEPTH_32F, 1);
             tmp_image = cvlib.CvCreateImage(new CvSize(image.width, image.height), (int)cvlib.IPL_DEPTH_32F, 1);
             CvPoint2D32f[] pts = new CvPoint2D32f[corner_count];
             GCHandle h;
-            cvlib.CvGoodFeaturesToTrack(ref gray, ref eig_image, ref tmp_image, cvtools.Convert1DArrToPtr(pts, out h),
-                        ref corner_count, 0.01, 1, IntPtr.Zero, 3, 1, 0.04);
+            cvlib.CvGoodFeaturesToTrack(ref gray, ref eig_image, ref tmp_image, cvtools.Convert1DArrToPtr(pts, out h), ref corner_count, 0.01, 1, IntPtr.Zero, 3, 1, 0.04);
             foreach (CvPoint2D32f p in pts)
             {
-                cvlib.CvCircle(ref image, new CvPoint((int)p.x, (int)p.y), 2, new CvScalar(0, 255, 0, 0), 2, 8, 0);
+                //
             }
-            Bitmap goodfeat = cvlib.ToBitmap(image, false);
-            ShowImage(goodfeat);
-            //SetCurrentImage("Features", image, true);
+
             cvlib.CvReleaseImage(ref eig_image);
             cvlib.CvReleaseImage(ref tmp_image);
             cvlib.CvReleaseImage(ref gray);
             cvtools.ReleaseHandel(h);
         }
+
 
         /// <summary>
         /// Shows the image in the picturebox on the form
