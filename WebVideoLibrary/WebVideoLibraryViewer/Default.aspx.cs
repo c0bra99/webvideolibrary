@@ -12,6 +12,7 @@ using System.Web.UI.WebControls.WebParts;
 using System.Xml.Linq;
 using DataLayer;
 using System.Collections.Generic;
+using System.IO;
 
 namespace WebVideoLibraryViewer
 {
@@ -19,12 +20,24 @@ namespace WebVideoLibraryViewer
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (!File.Exists(Utility.DATABASE_FILENAME_AND_PATH))
+            {
+                ProgramNotRanYet();
+                return;
+            }
+
             if (!IsPostBack)
             {
                 TreeNode root = new TreeNode("All Videos");
                 treeView.Nodes.Add(root);
                 Dictionary<string, TreeNode> treeNodes = new Dictionary<string, TreeNode>();
                 List<Clip> clips = Clip.GetAll();
+
+                if (clips.Count == 0)
+                {
+                    ProgramNotRanYet();
+                    return;
+                }
                 //sort the clips based on description, tier, clip number
                 clips.Sort(new Comparison<Clip>(Clip.CompareClips));
 
@@ -56,6 +69,14 @@ namespace WebVideoLibraryViewer
                     }
                 }
             }
+        }
+
+        private void ProgramNotRanYet()
+        {
+            Response.Clear();
+            Response.Write("Database does not exist yet, please refresh this page after you have ran the program to generate the database and video clips.");
+            Response.End();
+            return;
         }
     }
 }

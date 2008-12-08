@@ -269,25 +269,27 @@ namespace WebVideoLibrary
                     if (tier2FramesUsed == numFramesPerTier2Clip / 2)
                     {
                         tier2Clip.Thumbnail = (Bitmap)bmpImage.Clone();
+                        GoodFeaturesToTrack(image, tier2Clip);
                     }
                     if (tier3FramesUsed == numFramesPerTier3Clip / 2)
                     {
                         tier3Clip.Thumbnail = (Bitmap)bmpImage.Clone();
+                        GoodFeaturesToTrack(image, tier3Clip);
                     }
                     if (totalNumFramesUsed == numTotalFramesInVideo / 2)
                     {
-                        ((Clip)clips[Tier1Clip.OnlyClip]).Thumbnail = (Bitmap)bmpImage.Clone();
+                        Clip tier1clip = ((Clip)clips[Tier1Clip.OnlyClip]);
+                        tier1clip.Thumbnail = (Bitmap)bmpImage.Clone();
+                        GoodFeaturesToTrack(image, tier1clip);
                     }
 
                     //Add this frame to our dominant color calculations
                     dominantColorCalculators[currentTier3Clip].AddFrame(bmpImage);
-                    //ShowImage(bmpImage);
+                    ShowImage(bmpImage);
 
                     lblCurrFrame.Text = totalNumFramesUsed.ToString();
                     progressBar1.PerformStep();
                     Application.DoEvents();
-
-                    GoodFeaturesToTrack(image);
                 }
 
                 cvlib.CvReleaseVideoWriter(ref tier3VidWriter);
@@ -384,7 +386,7 @@ namespace WebVideoLibrary
         }
 
 
-        public void GoodFeaturesToTrack(IplImage image)
+        public void GoodFeaturesToTrack(IplImage image, Clip clip)
         {
             int corner_count = 6;
             CvSize size = new CvSize(image.width, image.height);
@@ -413,10 +415,20 @@ namespace WebVideoLibrary
             CvPoint2D32f[] pts = new CvPoint2D32f[corner_count];
             GCHandle h;
             cvlib.CvGoodFeaturesToTrack(ref gray, ref eig_image, ref tmp_image, cvtools.Convert1DArrToPtr(pts, out h), ref corner_count, 0.01, 1, IntPtr.Zero, 3, 1, 0.04);
+
+
+            StringBuilder sb = new StringBuilder("{");
             foreach (CvPoint2D32f p in pts)
             {
-                //
+                sb.Append("(");
+                sb.Append(p.x);
+                sb.Append(",");
+                sb.Append(p.y);
+                sb.Append(")");
             }
+            sb.Append('}');
+
+            clip.AddAttribute("Good Feature Points", sb.ToString());
 
             cvlib.CvReleaseImage(ref eig_image);
             cvlib.CvReleaseImage(ref tmp_image);
