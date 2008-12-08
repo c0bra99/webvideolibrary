@@ -384,37 +384,53 @@ namespace WebVideoLibrary
             return new string(chars);
         }
 
-
+        /// <summary>
+        /// Picks out the "important" elements in the clips
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="clip"></param>
         public void GoodFeaturesToTrack(IplImage image, Clip clip)
         {
-            int corner_count = 6;
+            //dictates # of "important" elements picked out
+            //smaller # decreases sensitivity of function
+            int cornerCount = 6;
             CvSize size = new CvSize(image.width, image.height);
-            IplImage gray, eig_image, tmp_image;
+            IplImage gray;
+            IplImage eig_image;
+            IplImage tmp_image;
 
+            //if no image
             if (image.imageData == IntPtr.Zero)
             {
                 return;
             }
 
-            // in case of image is not 1 channel
+            //if image is not 1 channel
             if (image.nChannels != 1)
             {
-                // create gray scale image
+                //make gray scale image
                 gray = cvlib.CvCreateImage(size, (int)cvlib.IPL_DEPTH_8U, 1);
-                // do color conversion
-                if (gray.imageData != IntPtr.Zero) cvlib.CvCvtColor(ref image, ref gray, cvlib.CV_BGR2GRAY);
-                else return;
+                //convert color
+                if (gray.imageData != IntPtr.Zero)
+                {
+                    cvlib.CvCvtColor(ref image, ref gray, cvlib.CV_BGR2GRAY);
+                }
+                else
+                {
+                    return;
+                }
             }
-            else //or simply make a clone
+            else
             {
                 gray = cvlib.CvCloneImage(ref image);
             }
             eig_image = cvlib.CvCreateImage(new CvSize(image.width, image.height), (int)cvlib.IPL_DEPTH_32F, 1);
             tmp_image = cvlib.CvCreateImage(new CvSize(image.width, image.height), (int)cvlib.IPL_DEPTH_32F, 1);
-            CvPoint2D32f[] pts = new CvPoint2D32f[corner_count];
+            CvPoint2D32f[] pts = new CvPoint2D32f[cornerCount];
             GCHandle h;
-            cvlib.CvGoodFeaturesToTrack(ref gray, ref eig_image, ref tmp_image, cvtools.Convert1DArrToPtr(pts, out h), ref corner_count, 0.01, 1, IntPtr.Zero, 3, 1, 0.04);
-
+            cvlib.CvGoodFeaturesToTrack(ref gray, ref eig_image, ref tmp_image, cvtools.Convert1DArrToPtr(pts, out h), ref cornerCount, 0.01, 1, IntPtr.Zero, 3, 1, 0.04);
+            
+            //controls output to website
             StringBuilder sb = new StringBuilder("{");
             for (int i = 0; i < pts.Length; i++)
             {
