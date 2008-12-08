@@ -391,8 +391,9 @@ namespace WebVideoLibrary
         /// <summary>
         /// Picks out the "important" elements in the clips
         /// </summary>
-        /// <param name="image"></param>
-        /// <param name="clip"></param>
+        /// <revision>
+        /// Christian Cox       12/7/08        Wrote this code.
+        /// </revision>
         public void GoodFeaturesToTrack(IplImage image, Clip clip)
         {
             //dictates # of "important" elements picked out
