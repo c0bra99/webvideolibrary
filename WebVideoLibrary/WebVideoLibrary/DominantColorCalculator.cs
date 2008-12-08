@@ -5,6 +5,9 @@ using System.Drawing;
 
 namespace WebVideoLibrary
 {
+    /// <summary>
+    /// This class will handle calculating the Dominant Color for a set of frames in a video.
+    /// </summary>
     class DominantColorCalculator
     {
         public enum DominantColor

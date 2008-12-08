@@ -311,6 +311,10 @@ namespace WebVideoLibrary
         /// <summary>
         /// Adds the Dominant Color attribute to each of the clips
         /// </summary>
+        /// 
+        /// <revision>
+        /// David Morrison      12/01/2008      Wrote this code.
+        /// </revision>
         private void AddDominantColorAttributesToClips(Hashtable clips, Dictionary<Tier3Clip, DominantColorCalculator> dominantColorCalculators)
         {
             DominantColorCalculator tier2Clip1DomColorCalc = DominantColorCalculator.Add(dominantColorCalculators[Tier3Clip.Clip1], dominantColorCalculators[Tier3Clip.Clip2]);
