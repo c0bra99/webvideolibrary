@@ -56,7 +56,6 @@
     <Content Include="Default.aspx" />
     <Content Include="DownloadFile.aspx" />
     <Content Include="GetThumbnail.aspx" />
-    <Content Include="PlayVideo.aspx" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -80,13 +79,6 @@
     </Compile>
     <Compile Include="GetThumbnail.aspx.designer.cs">
       <DependentUpon>GetThumbnail.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="PlayVideo.aspx.cs">
-      <DependentUpon>PlayVideo.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="PlayVideo.aspx.designer.cs">
-      <DependentUpon>PlayVideo.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

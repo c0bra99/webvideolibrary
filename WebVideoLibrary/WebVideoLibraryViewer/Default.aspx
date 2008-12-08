@@ -4,14 +4,24 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" >
 <head runat="server">
-    <title>Welcome Page</title>
+    <title>Web Video Library</title>
 </head>
-<body>
+<body bgcolor="#c0c0c0">
     <form id="form1" runat="server">
+    <div style ="text-align:center">
+        <asp:Label ID="Label1" runat="server" Text="Web Video Library" 
+            Font-Size="XX-Large"></asp:Label>
+        <br />
+        <asp:Label ID="Label2" runat="server" 
+            Text="By:  David Morrison &amp; Christian Cox"></asp:Label>
+        <br />
+    </div>
     <div>
-    
+        
         <asp:TreeView ID="treeView" runat="server" ExpandDepth="1" NodeIndent="100">
         </asp:TreeView>
+    
+
     
     </div>
     </form>
