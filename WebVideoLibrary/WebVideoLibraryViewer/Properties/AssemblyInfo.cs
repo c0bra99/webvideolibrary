@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("WebVideoLibraryViewer")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Sony Electronics, Inc.")]
+[assembly: AssemblyCompany("None Electronics, Inc.")]
 [assembly: AssemblyProduct("WebVideoLibraryViewer")]
-[assembly: AssemblyCopyright("Copyright © Sony Electronics, Inc. 2008")]
+[assembly: AssemblyCopyright("Copyright © None Electronics, Inc. 2008")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
