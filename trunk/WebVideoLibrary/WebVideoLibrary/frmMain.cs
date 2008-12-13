@@ -388,6 +388,7 @@ namespace WebVideoLibrary
             return new string(chars);
         }
 
+
         /// <summary>
         /// Picks out the "important" elements in the clips
         /// </summary>
