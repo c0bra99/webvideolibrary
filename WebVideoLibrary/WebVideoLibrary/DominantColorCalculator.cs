@@ -88,7 +88,7 @@ namespace WebVideoLibrary
             {
                 return DominantColor.Black;
             }
-            else if ((_totalR + _totalG + _totalB) == _height * _width * 255)
+            else if ((_totalR + _totalG + _totalB) == _height * _width * 255 * 3)
             {
                 return DominantColor.White;
             }
