@@ -1,0 +1,1 @@
+A web video library using the openCV .net wrapper dll provided by http://www.codeproject.com/KB/cs/Intel_OpenCV.aspx
